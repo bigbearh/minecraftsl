@@ -451,7 +451,7 @@ public class MinecraftSL extends JFrame {
 	          }
 	      	});
 	    
-	    borderpanel.setBorder(new MatteBorder(4, 4, 4, 4, clear));
+	    borderpanel.setBorder(new MatteBorder(4, 8, 4, 8, clear));
 	    
 		return borderpanel;
 	}
