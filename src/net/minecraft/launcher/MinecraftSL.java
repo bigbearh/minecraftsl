@@ -260,6 +260,8 @@ public class MinecraftSL extends JFrame {
 				
 				//newsPane.setText(htmlify("Loading news ..."));
 				newsPane.setText("Loading news ...");
+  				newsPane.setBorder(null);
+  				
 		    	try {
 		    		/*newsPane.setPage("http://minecraftsl.tumblr.com");
 		    		String s = newsPane.getText();
@@ -273,12 +275,15 @@ public class MinecraftSL extends JFrame {
 	    			newsPane.setEditable(false);
 	  				newsPane.setContentType("text/html");
 	  				newsPane.setPage("http://minecraftsl.tumblr.com");
+	  				newsPane.setBorder(null);
 	  				newsScrollPane.setViewportView(newsPane);
 		  		} catch (Throwable e) {
 		   			e.printStackTrace();
 		   			//newsPane.setText(htmlify("Failed to update news : "+e));
 		   			newsPane = new TexturedEditorPane();
 		   			newsPane.setText("Failed to update news : "+e);
+	  				newsPane.setBorder(null);
+	  				
 		   			newsScrollPane.setViewportView(newsPane);
 		  		}
 			}
@@ -311,7 +316,8 @@ public class MinecraftSL extends JFrame {
 	    if (checkTranslucencyMode(Translucency.PERPIXEL_TRANSPARENT) &&
 	    		checkTranslucencyMode(Translucency.PERPIXEL_TRANSLUCENT)) {
 	    } else {
-	    	clear = Color.black;
+	    	//clear = Color.black;
+	    	mainpanel = new TexturedPanel(Resources.Bitmaps.wool_cyan);
 	    	return mainpanel;
 	    }
 		setUndecorated(true);
@@ -444,6 +450,8 @@ public class MinecraftSL extends JFrame {
 	            setState(Frame.ICONIFIED);
 	          }
 	      	});
+	    
+	    borderpanel.setBorder(new MatteBorder(4, 4, 4, 4, clear));
 	    
 		return borderpanel;
 	}
