@@ -894,6 +894,9 @@ public final class GameUpdater implements Runnable {
 				continue;
 			}
 			for (File ff : list) {
+				if (ff == null) {
+					continue;
+				}
 				if (f.getPath().equals(ff.getPath())) {
 					existing++;
 				}

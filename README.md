@@ -1,9 +1,6 @@
 minecraftsl
 ===========
 
-Minecraft Smart Launcher - 3rd Party Open-Source Minecraft Launcher
+Minecraft Smart Launcher - 3rd Party Open-Source Minecraft Launcher 
 
-Changelog : 
-
-[Build 1 beta 1]
-- First build 
+See the file INFO if you need some informations about the project and how it goes on .
