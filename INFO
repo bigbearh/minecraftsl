@@ -1,0 +1,40 @@
+-- Text below this line is information for who did what in this project , also what to do and such things . --
+-- This document should only exist as long as there is no other place to put these contents in . --
+
+TODO : 
+- Make old / decompiled classes be easier to understand and cooperate in code style .
+- Work on re-implementing functions such as 
+    - custom .minecraft paths ( portable gaming  , " workspace project " got removed because of instability )
+    - mod-load-patcher ( implemented , not used )
+- Work on proper multi-layer-LauncherPanel allowing input go thru panels down to Minecraft if not denied with given boolean in panel
+    - The only cause of doing this is implementing IGM2 or modules in-game . Rendering may be enough , too .
+- Remove unneeded BackupUtil methods
+    - Were needed in older builds before the launch of the open-source project because of various changes , like status updates in the backup manager
+
+=================================================================
+
+External library / utility / ... list , feel free to insert the library or util you used in this project into this list :
+Example :
+- lib/util/... name [ Author , That person who used it ]
+or :
+- lib/util/... name [(Author)]
+if " Author " and " That person who used it " is the same person .
+------------------------------
+Sidenote : If something is unknown , use <???> . Please replace it if you know what should replace it .
+------------------------------
+- SevenZip LZMA [ <???> , AngelDE98 ]
+- jplayground [( AngelDE98 )]
+
+==================================================================
+
+List of decompiled code that needs to be humanized : 
+- net.minecraft.Launcher ( Written by Notch / Mojang )
+- AngelDE98 ( init(...) arguments )
+
+- net.minecraft.GameUpdater ( Written by Notch / Mojang )
+
+==================================================================
+
+Table of resources : 
+- net.minecraft.res.* : Skin files for MinecraftSL 
+- net.minecraft.minecraft(.key) : SSH key for minecraft.net servers
