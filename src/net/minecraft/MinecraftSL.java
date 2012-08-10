@@ -132,7 +132,7 @@ import com.jgoodies.forms.layout.Sizes;
  */
 public final class MinecraftSL extends JFrame {
 	
-	public static final String build = "1 alpha 1";
+	public static final String build = "1 alpha 2";
 	public static Random rand;
 	public static final Color clear = new Color(255, 255, 255, 0);
 	public static final Color black = new Color(0, 0, 0, 255);
@@ -348,7 +348,7 @@ public final class MinecraftSL extends JFrame {
 		return new UncaughtExceptionHandler() {
 			@Override
 			public void uncaughtException(Thread t, Throwable e) {
-				//e.printStackTrace();
+				e.printStackTrace();
 				
 				int filei = 0;
 				String filename = "fatal_"+filei+".txt";
@@ -366,13 +366,13 @@ public final class MinecraftSL extends JFrame {
 				String err = "\nPlease create a new issue on the github project page and give us the content of :\n"+errfile+"\nThanks ! Just by the way : You should restart MinecraftSL . Something went wrong ...";
 				String err2 = "Exception: "+e+"\r\n";
 				for (int i = 0; i < e.getStackTrace().length; i++) {
-					err2 += "i: "+e.getStackTrace()[i]+"\r\n";
+					err2 += i+": "+e.getStackTrace()[i]+"\r\n";
 				}
 				Throwable caused = e;
 				while ((caused = caused.getCause()) != null) {
 					err2 += "\r\nCaused by: "+e+"\r\n";
 					for (int i = 0; i < e.getStackTrace().length; i++) {
-						err2 += "i: "+e.getStackTrace()[i]+"\r\n";
+						err2 += i+": "+e.getStackTrace()[i]+"\r\n";
 					}
 				}
 				if (err2.isEmpty()) {

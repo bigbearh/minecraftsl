@@ -212,7 +212,7 @@ public class OutputConsole extends WindowAdapter
     try
     {
       PipedOutputStream pout = new PipedOutputStream(this.pin);
-      System.setOut(new PipedPrintStream(System.out, pout, true));
+      System.setOut(new PrintStream(pout, true));
     }
     catch (IOException io)
     {
@@ -226,7 +226,7 @@ public class OutputConsole extends WindowAdapter
     try
     {
       PipedOutputStream pout2 = new PipedOutputStream(this.pin2);
-      System.setErr(new PipedPrintStream(System.err, pout2, true));
+      System.setErr(new PrintStream(pout2, true));
     }
     catch (IOException io)
     {
