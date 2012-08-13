@@ -156,6 +156,7 @@ public final class OptionsMenu extends TexturedPanel {
 				setMainPanel(new MinecraftBackupManager());
 			}
 		});
+		
 		labelPanel.add(new JLabel("Minecrack Installer v.1.1: ", 4));
 		TransparentButton openMinecrack = new TransparentButton("Minecrack Installer");
 		fieldPanel.add(openMinecrack);
@@ -164,6 +165,7 @@ public final class OptionsMenu extends TexturedPanel {
 				setMainPanel(new MinecrackInstaller());
 			}
 		});
+		
 		labelPanel.add(new JLabel("Output Console:", 4));
 		TransparentButton openConsole = new TransparentButton("Show Output Console");
 		fieldPanel.add(openConsole);
@@ -172,32 +174,6 @@ public final class OptionsMenu extends TexturedPanel {
 				if (OutputConsole.quit)
 					new OutputConsole();
 				OutputConsole.frame.toFront();
-			}
-		});
-		labelPanel.add(new JLabel("Update Launcher ( needs Internet Connection ): ", 4));
-		TransparentButton updateLauncher = new TransparentButton("Update Launcher");
-		fieldPanel.add(updateLauncher);
-		updateLauncher.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					Options.set("mcsl_dir", MinecraftSL.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath().substring(1).toString());
-					File updaterFile = new File(Options.getSystemTempDir(), "MinecraftSLUpdater.jar");
-					if (updaterFile.exists()) {
-						net.minecraft.utils.BackupUtil.deleteFile(updaterFile);
-					}
-					System.out.println("Downloading the main updater file ...");
-					net.minecraft.utils.BackupUtil.downloadFile("https://sites.google.com/site/minecraftsloader/downloads/MinecraftSLUpdater.jar", updaterFile);
-					updaterFile = new File(Options.getSystemTempDir(), "MinecraftSLUpdater.jar");
-					System.out.println("Launching the main updater file ...");
-					Runtime rt = Runtime.getRuntime();
-					Process pr = rt.exec("java -jar \""+updaterFile+"\"");
-					InputStream is = pr.getInputStream();
-					InputStreamReader isr = new InputStreamReader(is);
-					BufferedReader br = new BufferedReader(isr);
-					System.exit(0);
-				}catch(Exception updateE) {
-					updateE.printStackTrace();
-				}
 			}
 		});
 		
@@ -291,14 +267,24 @@ public final class OptionsMenu extends TexturedPanel {
 		});
 	    fieldPanel.add(saveButton);
 	    
+	    labelPanel.add(new JLabel("Reload: ", 4));
+		JButton loadButton = new JButton("Load options");
+		loadButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Options.load(Options.optionsFile);
+				cRAMf.setValue(Options.get("ram_amount", "1024"));
+			}
+		});
+	    fieldPanel.add(saveButton);
+	    
 	    labelPanel.add(new JLabel("Reset: ", 4));
 		JButton resetButton = new JButton("Reset options");
 		resetButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Options.clear();
-				Options.save(Options.optionsFile);
-				Options.load(Options.optionsFile);
+				Options.setup();
 				labelPanel.removeAll();
 				fieldPanel.removeAll();
 				addOptions(labelPanel, fieldPanel);
@@ -311,6 +297,36 @@ public final class OptionsMenu extends TexturedPanel {
 	    //////////////////////////////////////////////////////////////////////////////////
 	    //////////////////////////////////////////////////////////////////////////////////
 	    //////////////////////////////////////////////////////////////////////////////////
+	    
+	    labelPanel.add(new JLabel("", 4));
+	    fieldPanel.add(new JLabel("", 4));
+	    
+		labelPanel.add(new JLabel("Update Launcher ( needs Internet Connection ): ", 4));
+		TransparentButton updateLauncher = new TransparentButton("Update Launcher");
+		fieldPanel.add(updateLauncher);
+		updateLauncher.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					Options.set("mcsl_dir", MinecraftSL.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath().substring(1).toString());
+					File updaterFile = new File(Options.getSystemTempDir(), "MinecraftSLUpdater.jar");
+					if (updaterFile.exists()) {
+						net.minecraft.utils.BackupUtil.deleteFile(updaterFile);
+					}
+					System.out.println("Downloading the main updater file ...");
+					net.minecraft.utils.BackupUtil.downloadFile("https://sites.google.com/site/minecraftsloader/downloads/MinecraftSLUpdater.jar", updaterFile);
+					updaterFile = new File(Options.getSystemTempDir(), "MinecraftSLUpdater.jar");
+					System.out.println("Launching the main updater file ...");
+					Runtime rt = Runtime.getRuntime();
+					Process pr = rt.exec("java -jar \""+updaterFile+"\"");
+					InputStream is = pr.getInputStream();
+					InputStreamReader isr = new InputStreamReader(is);
+					BufferedReader br = new BufferedReader(isr);
+					System.exit(0);
+				}catch(Exception updateE) {
+					updateE.printStackTrace();
+				}
+			}
+		});
 	    
 	    labelPanel.add(new JLabel("", 4));
 	    fieldPanel.add(new JLabel("", 4));

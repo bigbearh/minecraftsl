@@ -225,18 +225,20 @@ public final class GameUpdater implements Runnable {
 			
 			if (latestVersion != null) {
 				File localFile2 = new File(localFile1, "version");
+				boolean checkshouldupdate = true;
 				
 				int i = 0;
 				if ((!forceUpdate) && (localFile2.exists()) && (
 						(latestVersion.equals("-1")) || (latestVersion.equals(readVersionFile(localFile2))))) {
 					i = 1;
 					percentage = 90;
+					checkshouldupdate = false;
 				}
 				
 				if ((forceUpdate) || (i == 0)) {
 					shouldUpdate = true;
 				}
-				if ((!forceUpdate) && (localFile2.exists())) {
+				if ((!forceUpdate) && (localFile2.exists()) && checkshouldupdate) {
 					checkShouldUpdate();
 				}
 				if (shouldUpdate)	{

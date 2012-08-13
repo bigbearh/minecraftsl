@@ -88,6 +88,7 @@ import javax.swing.border.MatteBorder;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.plaf.metal.MetalLookAndFeel;
+import javax.swing.text.EditorKit;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
 
@@ -258,15 +259,8 @@ public final class MinecraftSL extends JFrame {
 		
 		newsPane.setBackground(new Color(0x222222));
 		newsPane.setForeground(new Color(0xffffff));
-		//newsPane.setContentType("text/html");
+		newsPane.setContentType("text/html");
 		//newsPane.setContentType("text/plain");
-		HTMLEditorKit localHTMLEditorKit = new HTMLEditorKit();
-		
-		StyleSheet localStyleSheet = localHTMLEditorKit.getStyleSheet();
-		localStyleSheet.addRule("body {    font-family: sans-serif;   color: #e0d0d0; }");
-		localStyleSheet.addRule("a{color: #aaaaff;}");
-		localHTMLEditorKit.setStyleSheet(localStyleSheet);
-		newsPane.setEditorKit(localHTMLEditorKit);
 		newsPane.setEditable(false);
 		newsPane.setBorder(null);
 		newsPane.setOpaque(false);
@@ -326,22 +320,12 @@ public final class MinecraftSL extends JFrame {
 		setLocationRelativeTo(null);
 	}
 	
-	public void setNewsPanePage(String url) throws IOException {
-		BufferedReader localBufferedReader = new BufferedReader(new InputStreamReader(new URL(url).openStream()));
-        StringBuilder localStringBuilder = new StringBuilder();
-        String line;
-        while ((line = localBufferedReader.readLine()) != null) {
-        	line = line.replaceAll("/>", ">");
-
-          localStringBuilder.append(line);
-        }
-        String text = localStringBuilder.toString();
-        text = "<html>" + text.substring(text.indexOf("<body"));
-        newsPane.setText(text);
+	public static void setNewsPanePage(String url) throws IOException {
+		instance.newsPane.setPage(url);
 	}
 
 	public String htmlify(String s) {
-		return "<html><body><font color=\"#"+Integer.toHexString(newsPane.getForeground().getRGB())+"\"><br><br><br><br><br><br><br><center>"+s+"</center></font></body></html>";
+		return "<html><body><font face=\"sans-serif\" color=\"#"+Integer.toHexString(newsPane.getForeground().getRGB())+"\"><br><br><br><br><br><br><br><center>"+s+"</center></font></body></html>";
 	}
 	
 	public static UncaughtExceptionHandler getUEH() {
