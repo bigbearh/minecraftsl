@@ -276,7 +276,7 @@ public final class OptionsMenu extends TexturedPanel {
 				cRAMf.setValue(Options.get("ram_amount", "1024"));
 			}
 		});
-	    fieldPanel.add(saveButton);
+	    fieldPanel.add(loadButton);
 	    
 	    labelPanel.add(new JLabel("Reset: ", 4));
 		JButton resetButton = new JButton("Reset options");
