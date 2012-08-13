@@ -40,21 +40,21 @@ public final class Options {
 		}
 	}
 	
-	public static void load(File file) {
+	public static void load() {
 		BufferedInputStream stream;
 		try {
-			stream = new BufferedInputStream(new FileInputStream(file.getAbsolutePath()));
+			stream = new BufferedInputStream(new FileInputStream(optionsFile));
 			properties.load(stream);
 			stream.close();
 		} catch (FileNotFoundException e) {
 			System.out.println("No file found - retry ...");
-			save(file);
-			load(file);
+			save();
+			load();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		setup();
-		save(file);
+		save();
 		for (Entry<Object, Object> entry : properties.entrySet()) {
 			String key = (String) entry.getKey();
 			String value = (String) entry.getValue();
@@ -65,14 +65,14 @@ public final class Options {
 		}
 	}
 	
-	public static void save(File file) {
+	public static void save() {
 		BufferedOutputStream stream;
 		try {
-			if (!file.exists()) {
+			if (!optionsFile.exists()) {
 				System.out.println("No file found , creating ...");
-				file.createNewFile();
+				optionsFile.createNewFile();
 			}
-			stream = new BufferedOutputStream(new FileOutputStream(file));
+			stream = new BufferedOutputStream(new FileOutputStream(optionsFile));
 			String comments = "";
 			properties.store(stream, comments);
 		} catch (FileNotFoundException e) {

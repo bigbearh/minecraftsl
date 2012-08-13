@@ -1,5 +1,6 @@
 package net.minecraft.minecrack;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -27,6 +28,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import net.minecraft.GameUpdater;
+import net.minecraft.MinecraftSL;
 import net.minecraft.Options;
 import net.minecraft.OptionsMenu;
 import net.minecraft.TransparentPanel;
@@ -44,34 +46,42 @@ public class MinecrackInstaller extends TransparentPanel {
 	static File tempFolder = null;
 	
 	public MinecrackInstaller() {
+		JPanel northPanel = new JPanel();
+		setLayout(new BorderLayout());
+		
 		JButton exitb = new JButton("Exit");
 		exitb.addActionListener(new ActionListener() {
 	      public void actionPerformed(ActionEvent e) {
 	    	OptionsMenu.back();
 	      }
 		});
-		add(exitb);
+		northPanel.add(exitb);
 		JButton patchmod = new JButton("Replace class files ( Online , faster )");
 		patchmod.addActionListener(new ActionListener() {
 	      public void actionPerformed(ActionEvent e) {
 	    	installAsMod();
 	      }
 		});
-		add(patchmod);
+		if (MinecraftSL.isOfflineMode()) {
+			patchmod.setEnabled(false);
+		}
+		northPanel.add(patchmod);
 		JButton patchhex = new JButton("Patch class files ( Offline , slower )");
 		patchhex.addActionListener(new ActionListener() {
 	      public void actionPerformed(ActionEvent e) {
 	    	installAsHexEdit();
 	      }
 		});
-		add(patchhex);
+		northPanel.add(patchhex);
 		JButton unpatchhex = new JButton("Uninstall per HEX ( Offline )");
 		unpatchhex.addActionListener(new ActionListener() {
 	      public void actionPerformed(ActionEvent e) {
 	    	uninstallAsHexEdit();
 	      }
 		});
-		add(unpatchhex);
+		northPanel.add(unpatchhex);
+		
+		add(northPanel, "Center");
 	}
 	
 	static File getTempFolder() {

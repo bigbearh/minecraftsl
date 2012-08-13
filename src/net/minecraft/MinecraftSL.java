@@ -320,8 +320,15 @@ public final class MinecraftSL extends JFrame {
 		setLocationRelativeTo(null);
 	}
 	
-	public static void setNewsPanePage(String url) throws IOException {
-		instance.newsPane.setPage(url);
+	public void setNewsPanePage(String url) throws IOException {
+		newsPane.setPage(url);
+	}
+	
+	public void setNewsPageFromOptions() {
+		try {
+			setNewsPanePage(Options.get("startpage"));
+		} catch (Exception e) {
+		}
 	}
 
 	public String htmlify(String s) {
@@ -375,7 +382,7 @@ public final class MinecraftSL extends JFrame {
 	}
 	
 	public static void main(String[] args) {
-		Options.load(Options.optionsFile);
+		Options.load();
 		
 		Thread.setDefaultUncaughtExceptionHandler(getUEH());
 		Thread.currentThread().setUncaughtExceptionHandler(getUEH());
@@ -486,7 +493,7 @@ public final class MinecraftSL extends JFrame {
 
 	
 	public static void main2(String[] args) {
-		Options.load(Options.optionsFile);
+		Options.load();
 		
 		Thread.setDefaultUncaughtExceptionHandler(getUEH());
 		Thread.currentThread().setUncaughtExceptionHandler(getUEH());
@@ -602,7 +609,7 @@ public final class MinecraftSL extends JFrame {
 	
 	@Override
 	public void dispose() {
-		Options.save(Options.optionsFile);
+		Options.save();
         new Thread("launcher.kill") {
         	public void run() {
         		for (int i = 0; i < 1000 && forceexit; i++) {

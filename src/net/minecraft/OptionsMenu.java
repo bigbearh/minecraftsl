@@ -262,7 +262,8 @@ public final class OptionsMenu extends TexturedPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Options.set("ram_amount", cRAMf.getValue()+"");
-				Options.save(Options.optionsFile);
+				Options.save();
+				MinecraftSL.instance.setNewsPageFromOptions();
 			}
 		});
 	    fieldPanel.add(saveButton);
@@ -272,8 +273,9 @@ public final class OptionsMenu extends TexturedPanel {
 		loadButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Options.load(Options.optionsFile);
+				Options.load();
 				cRAMf.setValue(Options.get("ram_amount", "1024"));
+				MinecraftSL.instance.setNewsPageFromOptions();
 			}
 		});
 	    fieldPanel.add(loadButton);
@@ -285,6 +287,7 @@ public final class OptionsMenu extends TexturedPanel {
 			public void actionPerformed(ActionEvent e) {
 				Options.clear();
 				Options.setup();
+				MinecraftSL.instance.setNewsPageFromOptions();
 				labelPanel.removeAll();
 				fieldPanel.removeAll();
 				addOptions(labelPanel, fieldPanel);
