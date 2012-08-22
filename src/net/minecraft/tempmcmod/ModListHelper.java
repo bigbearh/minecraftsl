@@ -10,7 +10,7 @@ import java.io.PrintWriter;
 import javax.swing.DefaultListModel;
 import javax.swing.ListModel;
 
-import net.minecraft.GameUpdater;
+import net.minecraft.LaunchUtil;
 import net.minecraft.Options;
 
 public final class ModListHelper {
@@ -193,29 +193,29 @@ public final class ModListHelper {
 			}
 			
 			System.out.println("Trying to delete ... the temp folder");
-			GameUpdater.subtaskMessage = "Deleting TEMP-MC folder ...";
+			LaunchUtil.subtaskMessage = "Deleting TEMP-MC folder ...";
 			File tempFold = new File(Options.getSystemTempDir(), "TEMP-MC");
 			net.minecraft.utils.BackupUtil.deleteDirectory(tempFold);
 			
 			tempFold.mkdirs();
 			
 			System.out.println("Unzipping Minecraft.jar");
-			GameUpdater.subtaskMessage = "Unzipping Minecraft.jar ( may take it's time )";
+			LaunchUtil.subtaskMessage = "Unzipping Minecraft.jar ( may take it's time )";
 			Zipper.unzipFolder(jarFileOrig, tempFold);
-			GameUpdater.subtaskMessage = "Deleting META-INF";
+			LaunchUtil.subtaskMessage = "Deleting META-INF";
 			System.out.println("Deleted META-INF : "+net.minecraft.utils.BackupUtil.deleteDirectory(new File(tempFold, "META-INF")));
 			
 			done = 0;
 			while (done != modsList.length) {
 				System.out.println("Unzipping :"+modsList[done]);
-				GameUpdater.subtaskMessage = "Unzipping Mod :"+modsList[done];
+				LaunchUtil.subtaskMessage = "Unzipping Mod :"+modsList[done];
 				Zipper.unzipFolder(new File(modsList[done]), tempFold);
 				done++;
 			}
 			
-			GameUpdater.subtaskMessage = "Archiving TEMP-MC to temp-mc.jar";
+			LaunchUtil.subtaskMessage = "Archiving TEMP-MC to temp-mc.jar";
 			Jarrer.jarFolderContents(tempFold, jarFile);
-			GameUpdater.subtaskMessage = "Deleting leftovers of TEMP-MC";
+			LaunchUtil.subtaskMessage = "Deleting leftovers of TEMP-MC";
 			net.minecraft.utils.BackupUtil.deleteDirectory(tempFold);
 			saveLastModified(jarFileOrig.lastModified());
 			saveModList2();
@@ -248,7 +248,7 @@ public final class ModListHelper {
 		
 		System.out.println("Unzipping Minecraft.jar");
 		net.minecraft.utils.Zipper.unzipFolder(jarFile, tempFold);
-		GameUpdater.subtaskMessage = "Deleting META-INF";
+		LaunchUtil.subtaskMessage = "Deleting META-INF";
 		System.out.println("Deleted META-INF : "+net.minecraft.utils.BackupUtil.deleteDirectory(new File(tempFold, "META-INF")));
 		
 		System.out.println("Unzipping : "+modZip.getName());

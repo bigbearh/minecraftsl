@@ -8,6 +8,8 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 
+import javax.net.ssl.HttpsURLConnection;
+
 /**
  *	Class for handling HTTP calls , util functions or .get(...) requests .
  *	@author Maik
@@ -43,6 +45,60 @@ public final class HTTPClient {
 			//
 			URL url = new URL(targetURL);
 			connection = (HttpURLConnection)url.openConnection();
+			connection.setRequestMethod("POST");
+			connection.setRequestProperty("Content-Type", (type != null && !type.trim().equals(""))?type:"application/x-www-form-urlencoded");
+			
+			connection.setRequestProperty("Content-Length", Integer.toString(urlParameters.getBytes().length));
+			connection.setRequestProperty("Content-Language", "en-US");
+			
+			connection.setUseCaches(false);
+			connection.setDoInput(true);
+			connection.setDoOutput(true);
+			
+			connection.connect();
+			
+		    DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
+		    wr.writeBytes(urlParameters);
+		    wr.flush();
+		    wr.close();
+		    
+		    InputStream is = connection.getInputStream();
+		    BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+		    
+		    StringBuffer response = new StringBuffer();
+		    String line;
+		    while ((line = rd.readLine()) != null) {
+		    	//String line;
+		        response.append(line);
+		        response.append('\r');
+		    }
+		    rd.close();
+		    
+		    str = response.toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+	    } finally {
+	    	if (connection != null) {
+	    		connection.disconnect();
+	    	}
+	    }
+		return str;
+	}
+	
+	/**
+	 * Get HTTPS call return as string ( Website ? )
+	 * @param targetURL URL of the target
+	 * @param urlParameters Parameters ( https://a.b.com?x=y... )
+	 * @param type Content type ( "" or null if default type )
+	 * @return Empty string if execution failed or response , which can be empty , too .
+	 */
+	public static String executeSecurePost(String targetURL, String urlParameters, String type) {
+		HttpsURLConnection connection = null;
+		String str = "";
+		try {
+			//
+			URL url = new URL(targetURL);
+			connection = (HttpsURLConnection)url.openConnection();
 			connection.setRequestMethod("POST");
 			connection.setRequestProperty("Content-Type", (type != null && !type.trim().equals(""))?type:"application/x-www-form-urlencoded");
 			

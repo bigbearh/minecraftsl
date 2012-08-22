@@ -13,7 +13,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import net.minecraft.GameUpdater;
+import net.minecraft.LaunchUtil;
 import net.minecraft.OptionsMenu;
 
 public class Zipper
@@ -77,7 +77,7 @@ public class Zipper
       {
         //int count;
     	currentSize = currentSize + 2048;
-    	GameUpdater.percentage = ((int)((currentSize / maximumSize)*100));
+    	LaunchUtil.percentage = ((int)((currentSize / maximumSize)*100));
         out.write(data, 0, count);
       }
       maximumSize = 0;
@@ -130,7 +130,7 @@ public class Zipper
         while ((count = zis.read(data, 0, 2048)) != -1)
         {
           //int count;
-        	GameUpdater.percentage = ((int)((currentSize / maximumSize)*100));
+        	LaunchUtil.percentage = ((int)((currentSize / maximumSize)*100));
           dest.write(data, 0, count);
         }
         currentSize = currentSize + 1;

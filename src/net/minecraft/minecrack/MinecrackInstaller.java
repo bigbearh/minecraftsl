@@ -27,7 +27,6 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import net.minecraft.GameUpdater;
 import net.minecraft.MinecraftSL;
 import net.minecraft.Options;
 import net.minecraft.OptionsMenu;
@@ -82,6 +81,7 @@ public class MinecrackInstaller extends TransparentPanel {
 		northPanel.add(unpatchhex);
 		
 		add(northPanel, "Center");
+		
 	}
 	
 	static File getTempFolder() {

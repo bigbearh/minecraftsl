@@ -16,6 +16,7 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import net.minecraft.GameUpdater;
+import net.minecraft.LaunchUtil;
 
 public class Jarrer
 {
@@ -89,7 +90,7 @@ public class Jarrer
       {
         //int count;
       	currentSize = currentSize + BUFFER;
-      	GameUpdater.percentage = ((int)((currentSize / maximumSize)));
+      	LaunchUtil.percentage = ((int)((currentSize / maximumSize)));
         out.write(data, 0, count);
       }
       maximumSize = 0;

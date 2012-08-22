@@ -40,6 +40,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Random;
@@ -133,7 +134,7 @@ import com.jgoodies.forms.layout.Sizes;
  */
 public final class MinecraftSL extends JFrame {
 	
-	public static final String build = "1 alpha 2";
+	public static final String build = "1 alpha 3";
 	public static Random rand;
 	public static final Color clear = new Color(255, 255, 255, 0);
 	public static final Color black = new Color(0, 0, 0, 255);
@@ -163,7 +164,7 @@ public final class MinecraftSL extends JFrame {
 	private Thread newsThread;
 	
 	public static LauncherPanel launcherpanel;
-	public static Launcher launcher;
+	public static ALauncher launcher;
 	
 	private static long currentram = 0;
 	public static String[] savedargs;
@@ -527,8 +528,8 @@ public final class MinecraftSL extends JFrame {
 			 */
 			loggedIn = true;
 			launched = true;
-			GameUpdater.forceUpdate = forceupdate.isSelected();
-			launcher = new Launcher();
+			LaunchUtil.forceUpdate = forceupdate.isSelected();
+			launcher = LaunchUtil.newLauncher();
 			launcherpanel = new LauncherPanel();
 			launcherpanel.setSize(mainpanel.getPreferredSize());
 			launcherpanel.add(launcher);
@@ -548,15 +549,69 @@ public final class MinecraftSL extends JFrame {
 		}
 	}
 	
-	private EnumError validateAcc(String user, String pass) {
-		EnumError error = EnumError.loading;
+	private EnumError validateAcc(final String username, final String password) {
+		final EnumError[] error = new EnumError[1];
+		error[0] = EnumError.loading;
 		// TODO : Implement checking on servers ... 
-		error = EnumError.valid;
-		return error;
+		
+		Thread t = new Thread("CheckThread") {
+			@Override
+			public void run() {
+				try {
+					String parameters = "user=" + URLEncoder.encode(username, "UTF-8") + "&password=" + URLEncoder.encode(password, "UTF-8") + "&version=" + 13;
+					String result = HTTPClient.executeSecurePost("https://login.minecraft.net/", parameters, null);
+					System.out.println(result);
+					if (result == null) {
+						error[0] = EnumError.other;
+						error[0].data = "Can't connect to minecraft.net";
+						setOfflineMode();
+						return;
+					}
+					if (result.trim().isEmpty()) {
+						error[0] = EnumError.other;
+						error[0].data = "Can't connect to minecraft.net";
+						setOfflineMode();
+						return;
+					}
+					if (!result.contains(":")) {
+						if (result.trim().equals("Bad login")) {
+							error[0] = EnumError.other;
+							error[0].data = "Login Failed";
+						} else if (result.trim().equals("Old version")) {
+							error[0] = EnumError.other;
+							error[0].data = "Outdated launcher core";
+						} else {
+							error[0] = EnumError.other;
+							error[0].data = result;
+						}
+						return;
+					}
+					String[] values = result.split(":");
+					
+					error[0] = EnumError.valid;
+					//userName latestVersion downloadTicket sessionId
+					error[0].data = values[2].trim()+":"+values[0].trim()+":"+values[1].trim()+":"+values[3].trim();
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+					error[0] = EnumError.other;
+					error[0].data = e+"";
+				}
+			}
+		};
+		t.setDaemon(true);
+		t.setPriority(4); // Slightly lower than default
+		t.start();
+		
+		error[0].handleError();
+		while (error[0].equals(EnumError.loading)) {
+		}
+		
+		return error[0];
 	}
 
 	public static enum EnumError { 
-		valid, failed, notregi, invalid, loading;
+		valid, failed, notregi, invalid, loading, other;
 		
 		private String name = getFullName();
 		/**
@@ -571,19 +626,21 @@ public final class MinecraftSL extends JFrame {
 			if (error == notregi) name = "Account not found";
 			if (error == invalid) name = "Wrong Password";
 			if (error == loading) name = "Loading ...";
+			if (error == other) name = error.data;
 			// No " user not premium "
 			return name; 
 		}
 		
 		public String getFullName() {
-			String name = "";
 			name = getFullName(this);
 			return name; 
 		}
 		
-		public void handleError() { 
+		public void handleError() {
 			String error = getFullName();
 			instance.errorLabel.setText(error);
+			instance.errorLabel.validate();
+			instance.errorLabel.repaint();
 		}
 	};
 	

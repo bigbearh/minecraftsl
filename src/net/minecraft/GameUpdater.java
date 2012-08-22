@@ -5,13 +5,10 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilePermission;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Constructor;
@@ -21,7 +18,6 @@ import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.JarURLConnection;
 import java.net.SocketPermission;
-import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
@@ -31,7 +27,6 @@ import java.security.CodeSource;
 import java.security.MessageDigest;
 import java.security.PermissionCollection;
 import java.security.PrivilegedExceptionAction;
-import java.security.ProtectionDomain;
 import java.security.SecureClassLoader;
 import java.security.cert.Certificate;
 import java.util.ArrayList;
@@ -43,93 +38,37 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Pack200;
-import java.util.jar.Pack200.Unpacker;
 
-import net.minecraft.Options.EnumOSMappingHelper;
+public class GameUpdater implements IGameUpdater {
 
-/**
- *	Class made by Notch , Mojang , decompiled and modified by AngelDE98 . <p>
- *	
- *	This class is the behind-the-scenes part of updating and launching the Minecraft client .
- *	Because of that this class is made by Notch and was decompiled later on out of his launcher . It's the currently most safe way of launching the client .
- *	
- *	The BIG TODO : Make it easier to understand .
- *	
- * @author Notch
- * @author Mojang
- * @author Maik
- *	
- */
-public final class GameUpdater implements Runnable {
-	public static final int STATE_INIT = 1;
-	public static final int STATE_DETERMINING_PACKAGES = 2;
-	public static final int STATE_CHECKING_CACHE = 3;
-	public static final int STATE_DOWNLOADING = 4;
-	public static final int STATE_EXTRACTING_PACKAGES = 5;
-	public static final int STATE_UPDATING_CLASSPATH = 6;
-	public static final int STATE_SWITCHING_APPLET = 7;
-	public static final int STATE_INITIALIZE_REAL_APPLET = 8;
-	public static final int STATE_START_REAL_APPLET = 9;
-	public static final int STATE_DONE = 10;
-	public static int percentage;
-	public int currentSizeDownload;
-	public int totalSizeDownload;
-	public int currentSizeExtract;
-	public int totalSizeExtract;
-	protected URL[] urlList;
-	private static ClassLoader classLoader;
-	protected Thread loaderThread;
-	protected Thread animationThread;
-	public boolean fatalError;
-	public String fatalErrorDescription;
-	public static String subtaskMessage = "";
-	protected int state = 1;
-	
-	protected boolean lzmaSupported = false;
-	protected boolean pack200Supported = false;
-	
-	protected String[] genericErrorMessage = { "An error occured while loading the applet.", "Please contact support to resolve this issue.", "<placeholder for error message>" };
-	protected boolean certificateRefused;
-	protected String[] certificateRefusedMessage = { "Permissions for Applet Refused.", "Please accept the permissions dialog to allow", "the applet to continue the loading process." };
-	
-	protected static boolean natives_loaded = false;
-	public static boolean forceUpdate = false;
-	private String latestVersion;
-	private String mainGameUrl;
-	public boolean pauseAskUpdate;
-	public boolean shouldUpdate;
-	
-	public GameUpdater(String paramString1, String paramString2)
-	{
-		latestVersion = paramString1;
-		mainGameUrl = paramString2;
-	}
-	
+	@Override
 	public void init() {
-		state = 1;
+		LaunchUtil.state = 1;
 		try
 		{
 			Class.forName("LZMA.LzmaInputStream");
-			lzmaSupported = true;
+			LaunchUtil.lzmaSupported = true;
 		}
 		catch (Throwable t) {
 		}
 		try {
 			Pack200.class.getSimpleName();
-			pack200Supported = true;
+			LaunchUtil.pack200Supported = true;
 		} catch (Throwable t) {
 		}
 	}
 
-	private String generateStacktrace(Exception paramException) {
+	@Override
+	public String generateStacktrace(Exception paramException) {
 		StringWriter localStringWriter = new StringWriter();
 		PrintWriter localPrintWriter = new PrintWriter(localStringWriter);
 		paramException.printStackTrace(localPrintWriter);
 		return localStringWriter.toString();
 	}
-	
-	protected String getDescriptionForState() {
-		switch (state) {
+
+	@Override
+	public String getDescriptionForState() {
+		switch (LaunchUtil.state) {
 		case 1:
 			return "Initializing loader";
 		case 2:
@@ -153,32 +92,34 @@ public final class GameUpdater implements Runnable {
 		}
 		return "unknown state";
 	}
-	
-	protected String trimExtensionByCapabilities(String paramString)	{
-		if (!pack200Supported) {
+
+	@Override
+	public String trimExtensionByCapabilities(String paramString) {
+		if (!LaunchUtil.pack200Supported) {
 			paramString = paramString.replaceAll(".pack", "");
 		}
 		
-		if (!lzmaSupported) {
+		if (!LaunchUtil.lzmaSupported) {
 			paramString = paramString.replaceAll(".lzma", "");
 		}
 		return paramString;
 	}
-	
-	protected void loadJarURLs() throws Exception {
-		state = 2;
-		String str1 = "lwjgl.jar, jinput.jar, lwjgl_util.jar, " + mainGameUrl;
+
+	@Override
+	public void loadJarURLs() throws Exception {
+		LaunchUtil.state = 2;
+		String str1 = "lwjgl.jar, jinput.jar, lwjgl_util.jar, " + LaunchUtil.mainGameUrl;
 		str1 = trimExtensionByCapabilities(str1);
 		
 		StringTokenizer localStringTokenizer = new StringTokenizer(str1, ", ");
 		int i = localStringTokenizer.countTokens() + 1;
 		
-		urlList = new URL[i];
+		LaunchUtil.urlList = new URL[i];
 		
 		URL localURL = new URL("http://s3.amazonaws.com/MinecraftDownload/");
 		
 		for (int j = 0; j < i - 1; j++) {
-			urlList[j] = new URL(localURL, localStringTokenizer.nextToken());
+			LaunchUtil.urlList[j] = new URL(localURL, localStringTokenizer.nextToken());
 		}
 		
 		String str2 = System.getProperty("os.name");
@@ -200,15 +141,16 @@ public final class GameUpdater implements Runnable {
 			fatalErrorOccured("no lwjgl natives files found", null);
 		} else {
 			str3 = trimExtensionByCapabilities(str3);
-			urlList[(i - 1)] = new URL(localURL, str3);
+			LaunchUtil.urlList[(i - 1)] = new URL(localURL, str3);
 		}
 	}
-	
+
+	@Override
 	public void run() {
 		init();
-		state = 3;
+		LaunchUtil.state = 3;
 		
-		percentage = 5;
+		LaunchUtil.percentage = 5;
 		try {
 			loadJarURLs();
 			
@@ -223,67 +165,69 @@ public final class GameUpdater implements Runnable {
 				localFile1.mkdirs();
 			}
 			
-			if (latestVersion != null) {
+			if (LaunchUtil.latestVersion != null) {
 				File localFile2 = new File(localFile1, "version");
 				boolean checkshouldupdate = true;
 				
 				int i = 0;
-				if ((!forceUpdate) && (localFile2.exists()) && (
-						(latestVersion.equals("-1")) || (latestVersion.equals(readVersionFile(localFile2))))) {
+				if ((!LaunchUtil.forceUpdate) && (localFile2.exists()) && (
+						(LaunchUtil.latestVersion.equals("-1")) || (LaunchUtil.latestVersion.equals(readVersionFile(localFile2))))) {
 					i = 1;
-					percentage = 90;
+					LaunchUtil.percentage = 90;
 					checkshouldupdate = false;
 				}
 				
-				if ((forceUpdate) || (i == 0)) {
-					shouldUpdate = true;
+				if ((LaunchUtil.forceUpdate) || (i == 0)) {
+					LaunchUtil.shouldUpdate = true;
 				}
-				if ((!forceUpdate) && (localFile2.exists()) && checkshouldupdate) {
+				if ((!LaunchUtil.forceUpdate) && (localFile2.exists()) && checkshouldupdate) {
 					checkShouldUpdate();
 				}
-				if (shouldUpdate)	{
+				if (LaunchUtil.shouldUpdate)	{
 					writeVersionFile(localFile2, "");
 					
 					downloadJars(str);
 					extractJars(str);
 					extractNatives(str);
 					
-					if (latestVersion != null) {
-						percentage = 90;
-						writeVersionFile(localFile2, latestVersion);
+					if (LaunchUtil.latestVersion != null) {
+						LaunchUtil.percentage = 90;
+						writeVersionFile(localFile2, LaunchUtil.latestVersion);
 					}
 				} else {
 					i = 1;
-					percentage = 90;
+					LaunchUtil.percentage = 90;
 				}
 			}
 			
 			updateClassPath(localFile1);
-			state = 10;
+			LaunchUtil.state = 10;
 		} catch (AccessControlException localAccessControlException) {
 			fatalErrorOccured(localAccessControlException.getMessage(), localAccessControlException);
-			certificateRefused = true;
+			LaunchUtil.certificateRefused = true;
 		} catch (Exception localException) {
 			fatalErrorOccured(localException.getMessage(), localException);
 		} finally {
-			loaderThread = null;
+			LaunchUtil.loaderThread = null;
 		}
 	}
-	
-	private void checkShouldUpdate() {
-		pauseAskUpdate = true;
-		while (pauseAskUpdate)
+
+	@Override
+	public void checkShouldUpdate() {
+		LaunchUtil.pauseAskUpdate = true;
+		while (LaunchUtil.pauseAskUpdate)
 			try {
 				Thread.sleep(1000L);
 			} catch (InterruptedException localInterruptedException) {
 				localInterruptedException.printStackTrace();
 			}
 	}
-	
-	protected String readVersionFile(File paramFile) {
+
+	@Override
+	public String readVersionFile(File versionFile) {
 		String str = "";
 		try {
-			DataInputStream localDataInputStream = new DataInputStream(new FileInputStream(paramFile));
+			DataInputStream localDataInputStream = new DataInputStream(new FileInputStream(versionFile));
 			str = localDataInputStream.readUTF();
 			localDataInputStream.close();
 			return str;
@@ -291,25 +235,28 @@ public final class GameUpdater implements Runnable {
 			return str;
 		}
 	}
-	
-	protected void writeVersionFile(File paramFile, String paramString) throws Exception {
-		DataOutputStream localDataOutputStream = new DataOutputStream(new FileOutputStream(paramFile));
-		localDataOutputStream.writeUTF(paramString);
+
+	@Override
+	public void writeVersionFile(File versionFile, String version)
+			throws Exception {
+		DataOutputStream localDataOutputStream = new DataOutputStream(new FileOutputStream(versionFile));
+		localDataOutputStream.writeUTF(version);
 		localDataOutputStream.close();
 	}
-	
-	protected void updateClassPath(File paramFile) throws Exception {
-		state = 6;
+
+	@Override
+	public void updateClassPath(File binDir) throws Exception {
+		LaunchUtil.state = 6;
 		
-		percentage = 95;
+		LaunchUtil.percentage = 95;
 		
-		URL[] arrayOfURL = new URL[urlList.length];
-		for (int i = 0; i < urlList.length; i++) {
-			arrayOfURL[i] = new File(paramFile, getJarName(urlList[i])).toURI().toURL();
+		URL[] arrayOfURL = new URL[LaunchUtil.urlList.length];
+		for (int i = 0; i < LaunchUtil.urlList.length; i++) {
+			arrayOfURL[i] = new File(binDir, getJarName(LaunchUtil.urlList[i])).toURI().toURL();
 		}
 		
-		if (classLoader == null) {
-			classLoader = new URLClassLoader(arrayOfURL) {
+		if (LaunchUtil.classLoader == null) {
+			LaunchUtil.classLoader = new URLClassLoader(arrayOfURL) {
 				protected PermissionCollection getPermissions(CodeSource paramCodeSource) {
 					PermissionCollection localPermissionCollection = null;
 					try {
@@ -334,18 +281,19 @@ public final class GameUpdater implements Runnable {
 				}
 			};
 		}
-		String str = paramFile.getAbsolutePath();
+		String str = binDir.getAbsolutePath();
 		if (!str.endsWith(File.separator)) str = str + File.separator;
 		unloadNatives(str);
 		
 		System.setProperty("org.lwjgl.librarypath", str + "natives");
 		System.setProperty("net.java.games.input.librarypath", str + "natives");
 		
-		natives_loaded = true;
+		LaunchUtil.natives_loaded = true;
 	}
-	
-	private void unloadNatives(String paramString) {
-		if (!natives_loaded) {
+
+	@Override
+	public void unloadNatives(String nativeDir) {
+		if (!LaunchUtil.natives_loaded) {
 			return;
 		}
 		try {
@@ -353,7 +301,7 @@ public final class GameUpdater implements Runnable {
 			localField.setAccessible(true);
 			Vector localVector = (Vector)localField.get(getClass().getClassLoader());
 			
-			String str1 = new File(paramString).getCanonicalPath();
+			String str1 = new File(nativeDir).getCanonicalPath();
 			
 			for (int i = 0; i < localVector.size(); i++) {
 				String str2 = (String)localVector.get(i);
@@ -367,14 +315,17 @@ public final class GameUpdater implements Runnable {
 			localException.printStackTrace();
 		}
 	}
-	
-	public Applet createApplet() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-		Class localClass = classLoader.loadClass("net.minecraft.client.MinecraftApplet");
+
+	@Override
+	public Applet createApplet() throws ClassNotFoundException,
+			InstantiationException, IllegalAccessException {
+		Class localClass = LaunchUtil.classLoader.loadClass("net.minecraft.client.MinecraftApplet");
 		return (Applet)localClass.newInstance();
 	}
-	
-	protected void downloadJars(String paramString) throws Exception {
-		File localFile = new File(paramString, "md5s");
+
+	@Override
+	public void downloadJars(String binDir) throws Exception {
+		File localFile = new File(binDir, "md5s");
 		Properties localProperties = new Properties();
 		if (localFile.exists()) {
 			try {
@@ -385,22 +336,22 @@ public final class GameUpdater implements Runnable {
 				localException1.printStackTrace();
 			}
 		}
-		state = 4;
+		LaunchUtil.state = 4;
 		
-		int[] arrayOfInt = new int[urlList.length];
-		boolean[] arrayOfBoolean = new boolean[urlList.length];
+		int[] arrayOfInt = new int[LaunchUtil.urlList.length];
+		boolean[] arrayOfBoolean = new boolean[LaunchUtil.urlList.length];
 		URLConnection localURLConnection;
 		Object localObject;
-		for (int i = 0; i < urlList.length; i++) {
-			localURLConnection = urlList[i].openConnection();
+		for (int i = 0; i < LaunchUtil.urlList.length; i++) {
+			localURLConnection = LaunchUtil.urlList[i].openConnection();
 			localURLConnection.setDefaultUseCaches(false);
 			arrayOfBoolean[i] = false;
 			if ((localURLConnection instanceof HttpURLConnection)) {
 				((HttpURLConnection)localURLConnection).setRequestMethod("HEAD");
 				
-				localObject = "\"" + localProperties.getProperty(getFileName(urlList[i])) + "\"";
+				localObject = "\"" + localProperties.getProperty(getFileName(LaunchUtil.urlList[i])) + "\"";
 				
-				if ((!forceUpdate) && (localObject != null)) localURLConnection.setRequestProperty("If-None-Match", (String)localObject);
+				if ((!LaunchUtil.forceUpdate) && (localObject != null)) localURLConnection.setRequestProperty("If-None-Match", (String)localObject);
 				
 				int j = ((HttpURLConnection)localURLConnection).getResponseCode();
 				if (j / 100 == 3) {
@@ -408,18 +359,18 @@ public final class GameUpdater implements Runnable {
 				}
 			}
 			arrayOfInt[i] = localURLConnection.getContentLength();
-			totalSizeDownload += arrayOfInt[i];
+			LaunchUtil.totalSizeDownload += arrayOfInt[i];
 		}
 		
-		int i = this.percentage = 10;
+		int i = LaunchUtil.percentage = 10;
 		
 		localObject = new byte[65536];
-		for (int j = 0; j < urlList.length; j++) {
+		for (int j = 0; j < LaunchUtil.urlList.length; j++) {
 			if (arrayOfBoolean[j] != false) {
-				percentage = (i + arrayOfInt[j] * 45 / totalSizeDownload);
+				LaunchUtil.percentage = (i + arrayOfInt[j] * 45 / LaunchUtil.totalSizeDownload);
 			} else {
 				try {
-					localProperties.remove(getFileName(urlList[j]));
+					localProperties.remove(getFileName(LaunchUtil.urlList[j]));
 					localProperties.store(new FileOutputStream(localFile), "md5 hashes for downloaded files");
 				} catch (Exception localException2) {
 					localException2.printStackTrace();
@@ -432,7 +383,7 @@ public final class GameUpdater implements Runnable {
 				while (n != 0) {
 					n = 0;
 					
-					localURLConnection = urlList[j].openConnection();
+					localURLConnection = LaunchUtil.urlList[j].openConnection();
 					
 					String str1 = "";
 					
@@ -445,9 +396,9 @@ public final class GameUpdater implements Runnable {
 						str1 = str1.substring(1, str1.length() - 1);
 					}
 					
-					String str2 = getFileName(urlList[j]);
+					String str2 = getFileName(LaunchUtil.urlList[j]);
 					InputStream localInputStream = getJarInputStream(str2, localURLConnection);
-					FileOutputStream localFileOutputStream = new FileOutputStream(paramString + str2);
+					FileOutputStream localFileOutputStream = new FileOutputStream(binDir + str2);
 					
 					long l1 = System.currentTimeMillis();
 					int i2 = 0;
@@ -459,10 +410,10 @@ public final class GameUpdater implements Runnable {
 					while ((i1 = localInputStream.read((byte[]) localObject, 0, ((byte[]) localObject).length)) != -1) {
 						localFileOutputStream.write((byte[]) localObject, 0, i1);
 						localMessageDigest.update((byte[]) localObject, 0, i1);
-						currentSizeDownload += i1;
+						LaunchUtil.currentSizeDownload += i1;
 						i3 += i1;
-						percentage = (i + currentSizeDownload * 45 / totalSizeDownload);
-						subtaskMessage = ("Retrieving: " + str2 + " " + currentSizeDownload * 100 / totalSizeDownload + "%");
+						LaunchUtil.percentage = (i + LaunchUtil.currentSizeDownload * 45 / LaunchUtil.totalSizeDownload);
+						LaunchUtil.subtaskMessage = ("Retrieving: " + str2 + " " + LaunchUtil.currentSizeDownload * 100 / LaunchUtil.totalSizeDownload + "%");
 						
 						i2 += i1;
 						long l2 = System.currentTimeMillis() - l1;
@@ -475,7 +426,7 @@ public final class GameUpdater implements Runnable {
 							l1 += 1000L;
 						}
 						
-						subtaskMessage += str3;
+						LaunchUtil.subtaskMessage += str3;
 					}
 					
 					localInputStream.close();
@@ -492,7 +443,7 @@ public final class GameUpdater implements Runnable {
 					if ((localURLConnection instanceof HttpURLConnection)) {
 						if ((bool) && ((i3 == arrayOfInt[j]) || (arrayOfInt[j] <= 0))) {
 							try {
-								localProperties.setProperty(getFileName(urlList[j]), str1);
+								localProperties.setProperty(getFileName(LaunchUtil.urlList[j]), str1);
 								localProperties.store(new FileOutputStream(localFile), "md5 hashes for downloaded files");
 							} catch (Exception localException3) {
 								localException3.printStackTrace();
@@ -501,7 +452,7 @@ public final class GameUpdater implements Runnable {
 							k++;
 							if (k < m) {
 								n = 1;
-								currentSizeDownload -= i3;
+								LaunchUtil.currentSizeDownload -= i3;
 							} else {
 								throw new Exception("failed to download " + str2);
 							}
@@ -511,217 +462,219 @@ public final class GameUpdater implements Runnable {
 			}
 		}
 		
-		subtaskMessage = "";
+		LaunchUtil.subtaskMessage = "";
 	}
-	
-	protected InputStream getJarInputStream(String paramString, final URLConnection paramURLConnection) throws Exception {
-		final InputStream[] arrayOfInputStream = new InputStream[1];
+
+	@Override
+	public InputStream getJarInputStream(String jarName,
+			final URLConnection jarConnection) throws Exception {
+		final InputStream[] jarStream = new InputStream[1];
 		
-		for (int i = 0; (i < 3) && (arrayOfInputStream[0] == null); i++) {
-			Thread local3 = new Thread() {
+		for (int i = 0; (i < 3) && (jarStream[0] == null); i++) {
+			Thread getThread = new Thread() {
 				public void run() {
 					try {
-						arrayOfInputStream[0] = paramURLConnection.getInputStream();
+						jarStream[0] = jarConnection.getInputStream();
 					}
 					catch (IOException localIOException)
 					{
 					}
 				}
 			};
-			local3.setName("JarInputStreamThread");
-			local3.start();
+			getThread.setName("JarInputStreamThread");
+			getThread.start();
 			
 			int j = 0;
-			while ((arrayOfInputStream[0] == null) && (j++ < 5)) {
+			while ((jarStream[0] == null) && (j++ < 5)) {
 				try {
-					local3.join(1000L);
+					getThread.join(1000L);
 				} catch (InterruptedException localInterruptedException1) {
 				}
 			}
-			if (arrayOfInputStream[0] != null) continue;
+			if (jarStream[0] != null) continue;
 			try {
-				local3.interrupt();
-				local3.join();
+				getThread.interrupt();
+				getThread.join();
 			}
 			catch (InterruptedException localInterruptedException2)
 			{
 			}
 		}
 		
-		if (arrayOfInputStream[0] == null) {
-			if (paramString.equals("minecraft.jar")) {
-				throw new Exception("Unable to download " + paramString);
+		if (jarStream[0] == null) {
+			if (jarName.equals("minecraft.jar")) {
+				throw new Exception("Unable to download " + jarName + " (minecraft jar!)");
 			}
-			throw new Exception("Unable to download " + paramString);
+			throw new Exception("Unable to download " + jarName);
 		}
 		
-		return arrayOfInputStream[0];
+		return jarStream[0];
 	}
-	
-	protected void extractLZMA(String paramString1, String paramString2) throws Exception {
-		File localFile = new File(paramString1);
-		if (!localFile.exists()) return;
-		FileInputStream localFileInputStream = new FileInputStream(localFile);
+
+	@Override
+	public void extractLZMA(String from, String to) throws Exception {
+		File fromFile = new File(from);
+		if (!fromFile.exists()) throw new IOException("File "+from+" doesn't exist !");
+		FileInputStream fromStream = new FileInputStream(fromFile);
 		
-		Class localClass = Class.forName("LZMA.LzmaInputStream");
-		Constructor localConstructor = localClass.getDeclaredConstructor(new Class[] { InputStream.class });
+		Class lzmaClass = Class.forName("LZMA.LzmaInputStream");
+		Constructor lzmaConstructor = lzmaClass.getDeclaredConstructor(new Class[] { InputStream.class });
 		
-		InputStream localInputStream = (InputStream)localConstructor.newInstance(new Object[] { localFileInputStream });
+		InputStream lzmaStream = (InputStream)lzmaConstructor.newInstance(new Object[] { fromStream });
 		
-		FileOutputStream localFileOutputStream = new FileOutputStream(paramString2);
+		FileOutputStream toStream = new FileOutputStream(to);
 		
-		byte[] arrayOfByte = new byte[16384];
+		byte[] data = new byte[lzmaStream.available()];
+		lzmaStream.read(data);
+		toStream.write(data);
 		
-		int i = localInputStream.read(arrayOfByte);
-		while (i >= 1) {
-			localFileOutputStream.write(arrayOfByte, 0, i);
-			i = localInputStream.read(arrayOfByte);
-		}
+		fromStream.close();
+		toStream.close();
 		
-		localInputStream.close();
-		localFileOutputStream.close();
-		
-		localFileOutputStream = null;
-		localInputStream = null;
-		
-		localFile.delete();
+		fromFile.delete();
 	}
-	
-	protected void extractPack(String paramString1, String paramString2) throws Exception {
-		File localFile = new File(paramString1);
-		if (!localFile.exists()) return;
+
+	@Override
+	public void extractPack(String from, String to) throws Exception {
+		File fromFile = new File(from);
+		if (!fromFile.exists()) return;
 		
-		FileOutputStream localFileOutputStream = new FileOutputStream(paramString2);
-    	JarOutputStream localJarOutputStream = new JarOutputStream(localFileOutputStream);
+		FileOutputStream toFileStream = new FileOutputStream(to);
+    	JarOutputStream toJarStream = new JarOutputStream(toFileStream);
     	
     	Pack200.Unpacker localUnpacker = Pack200.newUnpacker();
-    	localUnpacker.unpack(localFile, localJarOutputStream);
-    	localJarOutputStream.close();
+    	localUnpacker.unpack(fromFile, toJarStream);
+    	toJarStream.close();
     	
-    	localFile.delete();
+    	fromFile.delete();
 	}
-	
-	protected void extractJars(String paramString) throws Exception {
-		state = 5;
+
+	@Override
+	public void extractJars(String binDir) throws Exception {
+		LaunchUtil.state = 5;
 		
-		float f = 10.0F / urlList.length;
+		float f = 10.0F / LaunchUtil.urlList.length;
 		
-		for (int i = 0; i < urlList.length; i++) {
-			percentage = (55 + (int)(f * (i + 1)));
-			String str = getFileName(urlList[i]);
+		for (int i = 0; i < LaunchUtil.urlList.length; i++) {
+			LaunchUtil.percentage = (55 + (int)(f * (i + 1)));
+			String str = getFileName(LaunchUtil.urlList[i]);
 			
 			if (str.endsWith(".pack.lzma")) {
-				subtaskMessage = ("Extracting: " + str + " to " + str.replaceAll(".lzma", ""));
-				extractLZMA(paramString + str, paramString + str.replaceAll(".lzma", ""));
+				LaunchUtil.subtaskMessage = ("Extracting: " + str + " to " + str.replaceAll(".lzma", ""));
+				extractLZMA(binDir + str, binDir + str.replaceAll(".lzma", ""));
 				
-				subtaskMessage = ("Extracting: " + str.replaceAll(".lzma", "") + " to " + str.replaceAll(".pack.lzma", ""));
-				extractPack(paramString + str.replaceAll(".lzma", ""), paramString + str.replaceAll(".pack.lzma", ""));
+				LaunchUtil.subtaskMessage = ("Extracting: " + str.replaceAll(".lzma", "") + " to " + str.replaceAll(".pack.lzma", ""));
+				extractPack(binDir + str.replaceAll(".lzma", ""), binDir + str.replaceAll(".pack.lzma", ""));
 			} else if (str.endsWith(".pack")) {
-				subtaskMessage = ("Extracting: " + str + " to " + str.replace(".pack", ""));
-				extractPack(paramString + str, paramString + str.replace(".pack", ""));
+				LaunchUtil.subtaskMessage = ("Extracting: " + str + " to " + str.replace(".pack", ""));
+				extractPack(binDir + str, binDir + str.replace(".pack", ""));
 			} else if (str.endsWith(".lzma")) {
-				subtaskMessage = ("Extracting: " + str + " to " + str.replace(".lzma", ""));
-				extractLZMA(paramString + str, paramString + str.replace(".lzma", ""));
+				LaunchUtil.subtaskMessage = ("Extracting: " + str + " to " + str.replace(".lzma", ""));
+				extractLZMA(binDir + str, binDir + str.replace(".lzma", ""));
 			}
 		}
 	}
-	
-	protected void extractNatives(String paramString) throws Exception {
-		state = 5;
+
+	@Override
+	public void extractNatives(String binDir) throws Exception {
+		LaunchUtil.state = 5;
 		
-		int i = percentage;
+		int i = LaunchUtil.percentage;
 		
-		String str = getJarName(urlList[(urlList.length - 1)]);
+		String str = getJarName(LaunchUtil.urlList[(LaunchUtil.urlList.length - 1)]);
 		
-		Certificate[] arrayOfCertificate = Launcher.class.getProtectionDomain().getCodeSource().getCertificates();
+		Certificate[] arrayOfCertificate = LaunchUtil.class.getProtectionDomain().getCodeSource().getCertificates();
 		
 		if (arrayOfCertificate == null) {
-			Object localObject1 = Launcher.class.getProtectionDomain().getCodeSource().getLocation();
+			URL url = LaunchUtil.class.getProtectionDomain().getCodeSource().getLocation();
 			
-			Object localObject2 = (JarURLConnection)(JarURLConnection)new URL("jar:" + ((URL)localObject1).toString() + "!/net/minecraft/Launcher.class").openConnection();
-			((JarURLConnection)localObject2).setDefaultUseCaches(true);
+			JarURLConnection jarUrl = (JarURLConnection) new URL("jar:" + url.toString() + "!/net/minecraft/LaunchUtil.class").openConnection();
+			jarUrl.setDefaultUseCaches(true);
 			try {
-				arrayOfCertificate = ((JarURLConnection)localObject2).getCertificates();
+				arrayOfCertificate = jarUrl.getCertificates();
 			} catch (Exception localException) {
 			}
 		}
-		Object localObject1 = new File(paramString + "natives");
-		if (!((File)localObject1).exists()) {
-			((File)localObject1).mkdir();
+		File nativesDir = new File(binDir + "natives");
+		if (!nativesDir.exists()) {
+			nativesDir.mkdir();
 		}
 		
-		Object localObject2 = new File(paramString + str);
-		if (!((File)localObject2).exists()) return;
-		JarFile localJarFile = new JarFile((File)localObject2, true);
-		Enumeration localEnumeration = localJarFile.entries();
+		File jarFile = new File(binDir + str);
+		if (!jarFile.exists()) return;
+		JarFile localJarFile = new JarFile(jarFile, true);
+		Enumeration<JarEntry> entries = localJarFile.entries();
 		
-		totalSizeExtract = 0;
+		LaunchUtil.totalSizeExtract = 0;
 		
-		while (localEnumeration.hasMoreElements()) {
-			Object localObject3 = (JarEntry)localEnumeration.nextElement();
+		while (entries.hasMoreElements()) {
+			JarEntry entry = entries.nextElement();
 			
-			if ((((JarEntry)localObject3).isDirectory()) || (((JarEntry)localObject3).getName().indexOf('/') != -1)) {
+			if ((entry.isDirectory()) || (entry.getName().indexOf('/') != -1)) {
 				continue;
 			}
-			totalSizeExtract = (int)(totalSizeExtract + ((JarEntry)localObject3).getSize());
+			LaunchUtil.totalSizeExtract = (int)(LaunchUtil.totalSizeExtract + entry.getSize());
 		}
 		
-		currentSizeExtract = 0;
+		LaunchUtil.currentSizeExtract = 0;
 		
-		localEnumeration = localJarFile.entries();
+		entries = localJarFile.entries();
 		
-		while (localEnumeration.hasMoreElements()) {
-			Object localObject3 = (JarEntry)localEnumeration.nextElement();
+		while (entries.hasMoreElements()) {
+			JarEntry entry = entries.nextElement();
 			
-			if ((((JarEntry)localObject3).isDirectory()) || (((JarEntry)localObject3).getName().indexOf('/') != -1)) {
+			if ((entry.isDirectory()) || (entry.getName().indexOf('/') != -1)) {
 				continue;
 			}
-			File localFile = new File(paramString + "natives" + File.separator + ((JarEntry)localObject3).getName());
+			File localFile = new File(binDir + "natives" + File.separator + entry.getName());
 			if ((localFile.exists()) && 
 					(!localFile.delete()))
 			{
 				continue;
 			}
 			
-			InputStream localInputStream = localJarFile.getInputStream(localJarFile.getEntry(((JarEntry)localObject3).getName()));
-			FileOutputStream localFileOutputStream = new FileOutputStream(paramString + "natives" + File.separator + ((JarEntry)localObject3).getName());
+			InputStream entryStream = localJarFile.getInputStream(localJarFile.getEntry(entry.getName()));
+			FileOutputStream fileStream = new FileOutputStream(binDir + "natives" + File.separator + entry.getName());
 			
 			byte[] arrayOfByte = new byte[65536];
 			int j;
-			while ((j = localInputStream.read(arrayOfByte, 0, arrayOfByte.length)) != -1) {
-				localFileOutputStream.write(arrayOfByte, 0, j);
-				currentSizeExtract += j;
+			while ((j = entryStream.read(arrayOfByte, 0, arrayOfByte.length)) != -1) {
+				fileStream.write(arrayOfByte, 0, j);
+				LaunchUtil.currentSizeExtract += j;
 				
-				percentage = (i + currentSizeExtract * 20 / totalSizeExtract);
-				subtaskMessage = ("Extracting: " + ((JarEntry)localObject3).getName() + " " + currentSizeExtract * 100 / totalSizeExtract + "%");
+				LaunchUtil.percentage = (i + LaunchUtil.currentSizeExtract * 20 / LaunchUtil.totalSizeExtract);
+				LaunchUtil.subtaskMessage = ("Extracting: " + entry.getName() + " " + LaunchUtil.currentSizeExtract * 100 / LaunchUtil.totalSizeExtract + "%");
 			}
 			
-			validateCertificateChain(arrayOfCertificate, ((JarEntry)localObject3).getCertificates());
+			validateCertificateChain(arrayOfCertificate, entry.getCertificates());
 			
-			localInputStream.close();
-			localFileOutputStream.close();
+			entryStream.close();
+			fileStream.close();
 		}
-		subtaskMessage = "";
+		LaunchUtil.subtaskMessage = "";
 		
 		localJarFile.close();
 		
-		Object localObject3 = new File(paramString + str);
-		((File)localObject3).delete();
+		File tmpFile = new File(binDir + str);
+		tmpFile.delete();
 	}
-	
-	protected static void validateCertificateChain(Certificate[] paramArrayOfCertificate1, Certificate[] paramArrayOfCertificate2) throws Exception {
-		if (paramArrayOfCertificate1 == null) return;
-		if (paramArrayOfCertificate2 == null) throw new Exception("Unable to validate certificate chain. Native entry did not have a certificate chain at all");
+
+	@Override
+	public void validateCertificateChain(Certificate[] array1,
+			Certificate[] array2) throws Exception {
+		if (array1 == null) return;
+		if (array2 == null) throw new Exception("Unable to validate certificate chain. Native entry did not have a certificate chain at all");
 		
-		if (paramArrayOfCertificate1.length != paramArrayOfCertificate2.length) throw new Exception("Unable to validate certificate chain. Chain differs in length [" + paramArrayOfCertificate1.length + " vs " + paramArrayOfCertificate2.length + "]");
+		if (array1.length != array2.length) throw new Exception("Unable to validate certificate chain. Chain differs in length [" + array1.length + " vs " + array2.length + "]");
 		
-		for (int i = 0; i < paramArrayOfCertificate1.length; i++)
-			if (!paramArrayOfCertificate1[i].equals(paramArrayOfCertificate2[i]))
-				throw new Exception("Certificate mismatch: " + paramArrayOfCertificate1[i] + " != " + paramArrayOfCertificate2[i]);
+		for (int i = 0; i < array1.length; i++)
+			if (!array1[i].equals(array2[i]))
+				throw new Exception("Certificate mismatch: " + array1[i] + " != " + array2[i]);
 	}
-		
-	protected String getJarName(URL paramURL) {
-		String str = paramURL.getFile();
+
+	@Override
+	public String getJarName(URL jarURL) {
+		String str = jarURL.getFile();
 		
 		if (str.contains("?")) {
 			str = str.substring(0, str.indexOf("?"));
@@ -736,35 +689,35 @@ public final class GameUpdater implements Runnable {
 		
 		return str.substring(str.lastIndexOf('/') + 1);
 	}
-	
-	protected String getFileName(URL paramURL) {
-		String str = paramURL.getFile();
+
+	@Override
+	public String getFileName(URL fileURL) {
+		String str = fileURL.getFile();
 		if (str.contains("?")) {
 			str = str.substring(0, str.indexOf("?"));
 		}
 		return str.substring(str.lastIndexOf('/') + 1);
 	}
-	
-	protected void fatalErrorOccured(String paramString, Exception paramException) {
-		paramException.printStackTrace();
-		fatalError = true;
-		fatalErrorDescription = ("Fatal error occured (" + state + "): " + paramString);
-		System.out.println(fatalErrorDescription);
-		if (paramException != null)
-			System.err.println(generateStacktrace(paramException));
+
+	@Override
+	public void fatalErrorOccured(String description, Exception exception) {
+		LaunchUtil.fatalError = true;
+		LaunchUtil.fatalErrorDescription = ("Fatal error occured (" + LaunchUtil.state + "): " + (description==null?exception:description));
+		System.out.println(LaunchUtil.fatalErrorDescription);
+		if (exception != null)
+			System.err.println(generateStacktrace(exception));
 	}
-	
-	/**
-	 * @deprecated Use canForceOffline(); because of checking for natives , use this only for checking for the version file .
-	 */
+
+	@Override
+	@Deprecated
 	public boolean canPlayOffline() {
 		try {
-			String str1 = (String)AccessController.doPrivileged(new PrivilegedExceptionAction() {
+			String path = (String)AccessController.doPrivileged(new PrivilegedExceptionAction() {
 				public Object run() throws Exception {
 					return Options.getMCDir() + File.separator + "bin" + File.separator;
 				}
 			});
-			File localFile = new File(str1);
+			File localFile = new File(path);
 			if (!localFile.exists()) return false;
 			
 			localFile = new File(localFile, "version");
@@ -782,13 +735,12 @@ public final class GameUpdater implements Runnable {
 		}
 		return false;
 	}
+
+	/////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////
 	
-	//Special method list for Launcher , added by community//
-	
-	/**
-	 * Checks if offline mode can be forced . First checks if can play in offline mode , then if it can force offline mode .
-	 * @return true if offline mode can be forced , false if some files are missing .
-	 */
+	@Override
 	public boolean canForceOffline() {
 		try {
 			String path = (String)AccessController.doPrivileged(new PrivilegedExceptionAction() {
@@ -817,11 +769,7 @@ public final class GameUpdater implements Runnable {
 		}
 	}
 	
-	/**
-	 * Gets the OS natives and adds the file prefix .
-	 * @param dir Prefix to add ( Directory )
-	 * @return List of natives in directory dir
-	 */
+	@Override
 	public File[] getOSNatives(File dir) {
 		ArrayList<File> list = new ArrayList<File>();
 		switch (Options.getOs()) {
@@ -867,28 +815,16 @@ public final class GameUpdater implements Runnable {
 		return list.toArray(new File[0]);
 	}
 
-	/**
-	 * Utility method to check if various files exist in the directory dir .
-	 * @param dir Directory to check files in
-	 * @param list Files that should exist to return true
-	 * @return true if all files from the list are existing in dir or in subfolders of it
-	 */
-	public static boolean contains(File dir, File... list) {
+	@Override
+	public boolean contains(File dir, File... list) {
 		int existing = 0;
 		int needed = list.length;
 		existing = contains0(dir, list);
 		return existing >= needed;
 	}
 	
-	/**
-	 * Utility method to check if various files exist in the directory dir . <p>
-	 * 
-	 * Private method , ran internally .
-	 * @param dir Directory to check files in
-	 * @param list Files that should exist
-	 * @return count of existing files of the given list in the given dir
-	 */
-	private static int contains0(File dir, File... list) {
+	@Override
+	public int contains0(File dir, File... list) {
 		int existing = 0;
 		for (File f : dir.listFiles()) {
 			if (f.isDirectory()) {
@@ -906,4 +842,5 @@ public final class GameUpdater implements Runnable {
 		}
 		return existing;
 	}
+
 }
