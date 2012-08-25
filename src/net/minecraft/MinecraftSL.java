@@ -403,9 +403,13 @@ public final class MinecraftSL extends JFrame {
 			System.out.println("Restarting with "+Options.get("ram_amount")+" mb ram ...");
 			String pathToJar = MinecraftSL.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
 			
-			ArrayList params = new ArrayList();
+			ArrayList<String> params = new ArrayList<String>();
 			
-			params.add("javaw");
+			if(System.getProperty("os.name").startsWith("Windows")) {
+				params.add("javaw");
+			} else { // os x and linux
+				params.add("java");
+			}
 			int newram = Options.getAsInteger("ram_amount");
 			newram += newram/28.44444444444; // Every 28.444444444444444444...th MB 1 MB gets hidden because of the VM ...
 			newram -= 2; // For CPU , 1 is 0 , 2 is 1 , 3 is 2 , 4 is 3 , ... and also there is a +- 1 radius of not being perfect 
