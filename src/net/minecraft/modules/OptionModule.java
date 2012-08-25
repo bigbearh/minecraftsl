@@ -1,9 +1,5 @@
 package net.minecraft.modules;
 
-import java.awt.Component;
-
-import javax.swing.JPanel;
-
 import net.minecraft.TransparentPanel;
 
 /**

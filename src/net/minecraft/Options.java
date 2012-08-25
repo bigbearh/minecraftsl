@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import net.minecraft.modules.Modules;
-
 /**
  *	Class used for saving or loading options . Also directory util class .
  * 	@author Maik

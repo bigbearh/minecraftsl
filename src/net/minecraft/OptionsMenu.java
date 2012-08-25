@@ -4,20 +4,14 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GradientPaint;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
@@ -26,32 +20,24 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
-import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
-import javax.swing.JTextField;
 import javax.swing.SpinnerModel;
 import javax.swing.UIManager;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
 
 import net.minecraft.backupmanager.MinecraftBackupManager;
 import net.minecraft.console.OutputConsole;
 import net.minecraft.http.HTTPClient;
+import net.minecraft.minecrack.MinecrackInstaller;
 import net.minecraft.modules.ModuleBase;
 import net.minecraft.modules.Modules;
 import net.minecraft.modules.OptionModule;
 import net.minecraft.res.Skin;
-import net.minecraft.texpackinstaller.MinecraftTexpackInstaller;
-import net.minecraft.minecrack.MinecrackInstaller;
 
 /**
  *	Simple menu to set up options .
@@ -59,6 +45,7 @@ import net.minecraft.minecrack.MinecrackInstaller;
  *	
  */
 public final class OptionsMenu extends TexturedPanel {
+	private static final long serialVersionUID = 1L;
 	
 	/**
 	 *	Subclass for JPanels holding components with one single host-defined border .
@@ -66,6 +53,7 @@ public final class OptionsMenu extends TexturedPanel {
 	 *	
 	 */
 	public class JBorderPane extends JPanel {
+		private static final long serialVersionUID = 1L;
 		
 		public JBorderPane(Component c) {
 			super();
@@ -135,6 +123,8 @@ public final class OptionsMenu extends TexturedPanel {
 	}
 	
 	private static class TransparentButton extends JButton {
+		private static final long serialVersionUID = 1L;
+
 		public TransparentButton(String s) {
 			super(s);
 		}
@@ -323,6 +313,7 @@ public final class OptionsMenu extends TexturedPanel {
 					Process pr = rt.exec("java -jar \""+updaterFile+"\"");
 					InputStream is = pr.getInputStream();
 					InputStreamReader isr = new InputStreamReader(is);
+					@SuppressWarnings("unused")
 					BufferedReader br = new BufferedReader(isr);
 					System.exit(0);
 				}catch(Exception updateE) {

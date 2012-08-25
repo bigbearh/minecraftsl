@@ -1,12 +1,7 @@
 package net.minecraft;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.FlowLayout;
-import java.awt.LayoutManager;
 
-import javax.swing.JComponent;
-import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
 /**
@@ -15,7 +10,8 @@ import javax.swing.JPanel;
  *	
  */
 public class LauncherPanel extends JPanel {
-    
+	private static final long serialVersionUID = 1L;
+
 	public LauncherPanel() {
 		super();
 		setLayout(new BorderLayout());

@@ -19,6 +19,8 @@ import net.minecraft.res.Skin;
  *	
  */
 public class TexturedCheckbox extends JCheckBox {
+	private static final long serialVersionUID = 1L;
+	
 	protected Icon untickedi = new ImageIcon(Skin.getResourceURL("woolb.png"));
 	protected Icon tickedi = new ImageIcon(Skin.getResourceURL("woolb2.png"));
 	protected Icon disabledi = new ImageIcon(Skin.getResourceURL("woolb3.png"));

@@ -3,16 +3,11 @@ package net.minecraft;
 import java.applet.Applet;
 import java.applet.AppletStub;
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import net.minecraft.res.Skin;
 
 /**
  *	ALauncher implementation , used for various ALauncher versions implementing InGameMinecraftMenu or unbinding notchcode from MinecraftSL . <p>
@@ -22,7 +17,8 @@ import net.minecraft.res.Skin;
  *	@author Notch ( inspired by )
  */
 public abstract class ALauncher extends Applet implements Runnable, AppletStub, MouseListener {
-	
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public boolean isActive() {
 		if (LaunchUtil.context == 0) {
@@ -39,6 +35,8 @@ public abstract class ALauncher extends Applet implements Runnable, AppletStub, 
 	
 	public abstract void init(String username, String lastversion, String ticket, String sessionid);
 	
+	//FIXME it this correct?
+	@SuppressWarnings("deprecation")
 	public boolean canPlayOffline() {
 		return LaunchUtil.getGameUpdater().canForceOffline() && LaunchUtil.getGameUpdater().canPlayOffline();
 	}

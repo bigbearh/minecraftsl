@@ -5,7 +5,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.PrintStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -21,7 +20,7 @@ public class Zipper {
 	
 	public static boolean zipFolders(File[] srcFolders, File destZipFile, String inFolderName) {
 		try {
-			BufferedInputStream origin = null;
+			//BufferedInputStream origin = null;
 			FileOutputStream dest = new FileOutputStream(destZipFile);
 			ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(dest));
 			

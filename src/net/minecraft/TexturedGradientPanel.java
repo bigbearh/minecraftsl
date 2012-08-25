@@ -9,14 +9,14 @@ import java.awt.LayoutManager;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 
-import javax.swing.JPanel;
-
 import net.minecraft.res.Skin;
 
 /** 
  * Textured JPanel with gradient paintings left-right . 
  */
 public class TexturedGradientPanel extends TexturedPanel { 
+	private static final long serialVersionUID = 1L;
+
 	protected BufferedImage img;
 	public Image bgImage;
 	public int raww = 32;

@@ -6,11 +6,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
-import javax.swing.border.Border;
 import javax.swing.border.MatteBorder;
 
 /**
@@ -25,6 +23,7 @@ import javax.swing.border.MatteBorder;
  */
 
 public class EdgeButton extends JLabel {
+	private static final long serialVersionUID = 1L;
 	
 	public MouseListener mouse1;
 	public Color oldBackgroundMain;

@@ -1,51 +1,11 @@
 package net.minecraft;
 
 import java.applet.Applet;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FilePermission;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.math.BigInteger;
-import java.net.HttpURLConnection;
-import java.net.JarURLConnection;
-import java.net.SocketPermission;
-import java.net.URI;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.net.URLConnection;
-import java.security.AccessControlException;
-import java.security.AccessController;
-import java.security.CodeSource;
-import java.security.MessageDigest;
-import java.security.PermissionCollection;
-import java.security.PrivilegedExceptionAction;
-import java.security.ProtectionDomain;
-import java.security.SecureClassLoader;
 import java.security.cert.Certificate;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Properties;
-import java.util.StringTokenizer;
-import java.util.Vector;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
-import java.util.jar.JarOutputStream;
-import java.util.jar.Pack200;
-import java.util.jar.Pack200.Unpacker;
-
-import net.minecraft.Options.EnumOSMappingHelper;
 
 /**
  *	Interface for GameUpdaters , inspired by Markus Notch Persson's  "GameUpdater.class"

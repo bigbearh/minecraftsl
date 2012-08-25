@@ -8,14 +8,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.swing.DefaultListModel;
-import javax.swing.ListModel;
 
 import net.minecraft.LaunchUtil;
 import net.minecraft.Options;
 
 public final class ModListHelper {
 	
-	public static DefaultListModel lmO = new DefaultListModel();
+	public static DefaultListModel<String> lmO = new DefaultListModel<String>();
 	
 	public static void loadModList() {
 		lmO.clear();
@@ -68,8 +67,8 @@ public final class ModListHelper {
 		}
 	}
 	
-	public static DefaultListModel loadModList2() {
-		DefaultListModel toReturn = new DefaultListModel();
+	public static DefaultListModel<String> loadModList2() {
+		DefaultListModel<String> toReturn = new DefaultListModel<String>();
 		File listf = new File(Options.getMCDir(), "mcsl_mods.txt");
     
 		try {
@@ -163,7 +162,7 @@ public final class ModListHelper {
 		}
 	}
 	
-	public static boolean checkSameListObjects(DefaultListModel lm1, DefaultListModel lm2) {
+	public static boolean checkSameListObjects(DefaultListModel<String> lm1, DefaultListModel<String> lm2) {
 		Object array[] = lm1.toArray();
 		for (Object obj:array) {
 			if (!lm2.contains(obj)) {

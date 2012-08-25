@@ -3,17 +3,17 @@ package net.minecraft.console;
 import java.awt.Color;
 
 import javax.swing.JEditorPane;
-import javax.swing.JOptionPane;
 
 public class JEditorPaneX extends JEditorPane {
-	
+	private static final long serialVersionUID = 1L;
+
 	public String getTXT() {
 		int ss = getSelectionStart();
 		int se = getSelectionStart();
 		setSelectionStart(0);
 		setSelectionEnd(getText().length());
 		String s2 = getSelectedText();
-		s2 = s2.replace(" ","\n");
+		s2 = s2.replace("ï¿½","\n");
 		setSelectionStart(ss);
 		setSelectionEnd(se);
 		return s2;
@@ -22,7 +22,7 @@ public class JEditorPaneX extends JEditorPane {
 	public String getHTML(String s) {
 		String s2 = s;
 		String ignore = "";
-		String style = "<style type=\"text/css\">body{ font-family: sans-serif; color: #000000; }</style>";
+		//String style = "<style type=\"text/css\">body{ font-family: sans-serif; color: #000000; }</style>";
 		s2 = s2.replaceAll("<html>", ignore);
 		s2 = s2.replaceAll("</html>", ignore);
 		s2 = s2.replaceAll("<body>", ignore);
@@ -31,8 +31,8 @@ public class JEditorPaneX extends JEditorPane {
 		s2 = s2.replaceAll("</head>", ignore);
 		s2 = s2.replaceAll("<p style=\"margin-top: 0\">",ignore);
 		s2 = s2.replaceAll("</p>",ignore);
-		while (s2.trim().replaceAll("<font face=\"sans-serif\">", "").trim().startsWith(" ")) {
-			s2 = s2.replace(" ",ignore);
+		while (s2.trim().replaceAll("<font face=\"sans-serif\">", "").trim().startsWith("ï¿½")) {
+			s2 = s2.replace("ï¿½",ignore);
 		}
 		boolean doflush = (s2.trim().replaceAll("<font face=\"sans-serif\">", "").trim().startsWith("&#160;<br>")||s2.trim().replaceAll("<font face=\"sans-serif\">", "").trim().startsWith("<br>"));
 		while (s2.trim().replaceAll("<font face=\"sans-serif\">", "").trim().startsWith("&#160;<br>")) {
@@ -45,7 +45,7 @@ public class JEditorPaneX extends JEditorPane {
 			System.out.print("");
 		}
 		s2 = s2.replaceAll("<none>", "<font>");
-		s2 = s2.replaceAll("\n"," <br>");
+		s2 = s2.replaceAll("\n","ï¿½<br>");
 		s2 = s2.replaceAll("</none>", "</font>");
 		s2 = s2.replaceAll("<red>", "</font><font color=\"#ff0000\" style=\"font-family:sans-serif\">");
 		s2 = s2.replaceAll("</red>", "</font><font style=\"font-family:sans-serif\">");
@@ -59,8 +59,8 @@ public class JEditorPaneX extends JEditorPane {
 	}
 	
 	public void append(String s, Color c) {
-		String br1 = "<none>";
-		String br2 = "</none>";
+		//String br1 = "<none>";
+		//String br2 = "</none>";
 		if (c==Color.red) setText(getHTML(getText()+"<red>"+s+"</red>"));
 		setCaretPosition(getCaretPosition()+s.length());
 	}

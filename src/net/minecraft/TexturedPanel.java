@@ -17,6 +17,8 @@ import net.minecraft.res.Skin;
  * Textured JPanels 
  */
 public class TexturedPanel extends JPanel { 
+	private static final long serialVersionUID = 1L;
+
 	protected BufferedImage img;
 	public Image bgImage;
 	public int raww = 32;

@@ -154,8 +154,8 @@ public class GameUpdater implements IGameUpdater {
 		try {
 			loadJarURLs();
 			
-			String str = (String)AccessController.doPrivileged(new PrivilegedExceptionAction() {
-				public Object run() throws Exception {
+			String str = (String)AccessController.doPrivileged(new PrivilegedExceptionAction<String>() {
+				public String run() throws Exception {
 					return Options.getMCDir() + File.separator + "bin" + File.separator;
 				}
 			});
@@ -299,7 +299,8 @@ public class GameUpdater implements IGameUpdater {
 		try {
 			Field localField = ClassLoader.class.getDeclaredField("loadedLibraryNames");
 			localField.setAccessible(true);
-			Vector localVector = (Vector)localField.get(getClass().getClassLoader());
+			@SuppressWarnings("unchecked")
+			Vector<String> localVector = (Vector<String>)localField.get(getClass().getClassLoader());
 			
 			String str1 = new File(nativeDir).getCanonicalPath();
 			
@@ -319,7 +320,7 @@ public class GameUpdater implements IGameUpdater {
 	@Override
 	public Applet createApplet() throws ClassNotFoundException,
 			InstantiationException, IllegalAccessException {
-		Class localClass = LaunchUtil.classLoader.loadClass("net.minecraft.client.MinecraftApplet");
+		Class<?> localClass = LaunchUtil.classLoader.loadClass("net.minecraft.client.MinecraftApplet");
 		return (Applet)localClass.newInstance();
 	}
 
@@ -517,8 +518,8 @@ public class GameUpdater implements IGameUpdater {
 		if (!fromFile.exists()) throw new IOException("File "+from+" doesn't exist !");
 		FileInputStream fromStream = new FileInputStream(fromFile);
 		
-		Class lzmaClass = Class.forName("LZMA.LzmaInputStream");
-		Constructor lzmaConstructor = lzmaClass.getDeclaredConstructor(new Class[] { InputStream.class });
+		Class<?> lzmaClass = Class.forName("LZMA.LzmaInputStream");
+		Constructor<?> lzmaConstructor = lzmaClass.getDeclaredConstructor(new Class[] { InputStream.class });
 		
 		InputStream lzmaStream = (InputStream)lzmaConstructor.newInstance(new Object[] { fromStream });
 		
@@ -712,8 +713,8 @@ public class GameUpdater implements IGameUpdater {
 	@Deprecated
 	public boolean canPlayOffline() {
 		try {
-			String path = (String)AccessController.doPrivileged(new PrivilegedExceptionAction() {
-				public Object run() throws Exception {
+			String path = (String)AccessController.doPrivileged(new PrivilegedExceptionAction<String>() {
+				public String run() throws Exception {
 					return Options.getMCDir() + File.separator + "bin" + File.separator;
 				}
 			});
@@ -743,8 +744,8 @@ public class GameUpdater implements IGameUpdater {
 	@Override
 	public boolean canForceOffline() {
 		try {
-			String path = (String)AccessController.doPrivileged(new PrivilegedExceptionAction() {
-				public Object run() throws Exception {
+			String path = (String)AccessController.doPrivileged(new PrivilegedExceptionAction<String>() {
+				public String run() throws Exception {
 					return Options.getMCDir() + File.separator + "bin" + File.separator;
 				}
 			});
