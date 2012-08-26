@@ -1,7 +1,5 @@
-# For projects using nanoc (http://nanoc.stoneship.org/)
+# Eclipse output folder
+bin/
 
-# Default location for output, needs to match output_dir's value found in config.yaml
-output/
-
-# Temporary file directory
-tmp/
+# Mac OS X files
+.DS_Store

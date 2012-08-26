@@ -2,6 +2,7 @@ package net.minecraft.backupmanager;
 
 import java.io.File;
 import java.util.ArrayList;
+
 import javax.swing.filechooser.FileFilter;
 
 import net.minecraft.Options;
@@ -22,7 +23,7 @@ public class BackupUtil
 
   public static void backupGame(File zipDestiny)
   {
-    ArrayList contents = new ArrayList();
+    ArrayList<File> contents = new ArrayList<File>();
 
     File f = Options.getMCDir();
     if (f.exists()) {

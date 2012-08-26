@@ -1,109 +1,43 @@
 package net.minecraft;
 
-import javax.imageio.ImageIO;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JViewport;
-import javax.swing.UIManager;
-
 import java.awt.BorderLayout;
-import javax.swing.JScrollPane;
-import javax.swing.BoxLayout;
-
+import java.awt.Color;
 import java.awt.Component;
-import java.awt.Toolkit;
-import java.awt.geom.Point2D;
-import java.awt.image.BufferStrategy;
-import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
-import java.awt.image.ImageProducer;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Random;
 
-import javax.swing.JTextField;
-
-import java.awt.AWTException;
-import java.awt.Container;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GraphicsDevice;
-import java.awt.Point;
-import java.awt.GraphicsEnvironment;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Image;
-import java.awt.ImageCapabilities;
-import java.awt.LayoutManager;
-import java.awt.Paint;
-
-import javax.swing.JButton;
-import java.awt.Insets;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowEvent;
-
-import javax.swing.JEditorPane;
-import java.awt.GridLayout;
+import javax.swing.JCheckBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
-
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JPasswordField;
-import javax.swing.border.Border;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.border.MatteBorder;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-import javax.swing.plaf.metal.MetalLookAndFeel;
-import javax.swing.text.EditorKit;
-import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.html.StyleSheet;
-
-import java.awt.Color;
-import com.jgoodies.forms.factories.FormFactory;
-import com.sun.awt.AWTUtilities;
-import com.sun.awt.AWTUtilities.Translucency;
-
-import javax.swing.ImageIcon;
-import javax.swing.SwingConstants;
 
 import net.minecraft.http.HTTPClient;
 import net.minecraft.modules.Modules;
 import net.minecraft.res.Skin;
+
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.RowSpec;
 import com.jgoodies.forms.layout.Sizes;
 
 /*
@@ -133,6 +67,7 @@ import com.jgoodies.forms.layout.Sizes;
  *	
  */
 public final class MinecraftSL extends JFrame {
+	private static final long serialVersionUID = 1L;
 	
 	public static final String build = "1 alpha 3";
 	public static Random rand;
@@ -158,6 +93,7 @@ public final class MinecraftSL extends JFrame {
 	private JCheckBox forceupdate = new TexturedCheckbox("Force update");
 	private LogoButton logo;
 	
+	@SuppressWarnings("unused")
 	private boolean loggedIn = false;
 	public static boolean launched = false;
 	private static boolean offlinemode = false;
@@ -403,9 +339,13 @@ public final class MinecraftSL extends JFrame {
 			System.out.println("Restarting with "+Options.get("ram_amount")+" mb ram ...");
 			String pathToJar = MinecraftSL.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
 			
-			ArrayList params = new ArrayList();
+			ArrayList<String> params = new ArrayList<String>();
 			
-			params.add("javaw");
+			if(System.getProperty("os.name").startsWith("Windows")) {
+				params.add("javaw");
+			} else { // os x and linux
+				params.add("java");
+			}
 			int newram = Options.getAsInteger("ram_amount");
 			newram += newram/28.44444444444; // Every 28.444444444444444444...th MB 1 MB gets hidden because of the VM ...
 			newram -= 2; // For CPU , 1 is 0 , 2 is 1 , 3 is 2 , 4 is 3 , ... and also there is a +- 1 radius of not being perfect 
@@ -518,11 +458,11 @@ public final class MinecraftSL extends JFrame {
 	}
 	
 	private void handleLogin(String user, String pass, EnumError error) { 
-		String[] args = {};
+		//String[] args = {};
 		if (error != EnumError.valid) {
 			error.handleError();
 		} else {
-			newsThread.stop();
+			newsThread.interrupt();
 			/*
 			 * Stopping a thread with Thread.stop causes it to unlock all of the monitors that it has locked , but the ThreadDeath error is being catched -.-
 			 */

@@ -1,22 +1,7 @@
 package net.minecraft;
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GradientPaint;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.LayoutManager;
-import java.awt.geom.Point2D;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.PixelGrabber;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.util.ArrayList;
-
-import javax.imageio.ImageIO;
-import javax.swing.JPanel;
 
 import net.minecraft.res.Skin;
 
@@ -27,7 +12,8 @@ import net.minecraft.res.Skin;
  *	
  */
 public class LogoPanel extends TexturedPanel {
-	
+	private static final long serialVersionUID = 1L;
+
 	public LogoPanel() {
 		super();
 	    setOpaque(false);

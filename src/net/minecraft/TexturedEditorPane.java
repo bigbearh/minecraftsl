@@ -3,7 +3,6 @@ package net.minecraft;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.Rectangle;
 
 import javax.swing.JEditorPane;
 
@@ -16,6 +15,8 @@ import net.minecraft.res.Skin;
  *	
  */
 public class TexturedEditorPane extends JEditorPane {
+	private static final long serialVersionUID = 1L;
+
 	public Image bgImage = Skin.wool_black.getScaledInstance(64, 64, 16);
 	
 	@Override

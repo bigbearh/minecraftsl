@@ -3,7 +3,6 @@ package net.minecraft;
 import java.applet.Applet;
 import java.awt.Image;
 import java.awt.image.VolatileImage;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -80,7 +79,7 @@ public final class LaunchUtil {
 	
 	//LAUNCHER FIELDS//
 	
-	public static Map<String, String> customParameters = new HashMap();
+	public static Map<String, String> customParameters = new HashMap<String, String>();
 	public static boolean gameUpdaterStarted = false;
 	public static Applet applet;
 	public static Image bgImage;

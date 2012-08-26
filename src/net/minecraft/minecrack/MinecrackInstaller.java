@@ -3,21 +3,10 @@ package net.minecraft.minecrack;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.ByteBuffer;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CharsetEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +31,8 @@ import net.minecraft.utils.Zipper;
  *	
  */
 public class MinecrackInstaller extends TransparentPanel {
+	private static final long serialVersionUID = 1L;
+
 	static File tempFolder = null;
 	
 	public MinecrackInstaller() {
@@ -278,7 +269,7 @@ public class MinecrackInstaller extends TransparentPanel {
 		}
 		boolean isb = false;
 		int is = 0;
-		int ii = 0;
+		//int ii = 0;
 		int il = 0;
 		for (int i = 0; i < b.size(); i++) {
 			char c = (char) (int) b.get(i);
@@ -287,7 +278,7 @@ public class MinecrackInstaller extends TransparentPanel {
 					is = i;
 				}
 				isb = true;
-				ii = i;
+				//ii = i;
 				il++;
 			} else {
 				il = 0;

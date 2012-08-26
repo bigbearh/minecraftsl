@@ -34,7 +34,11 @@ import java.awt.Color;
 import java.awt.Component;
 import java.lang.ref.WeakReference;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
 import com.jgoodies.forms.factories.Borders;

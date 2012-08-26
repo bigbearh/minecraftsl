@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 import net.minecraft.res.Skin;
 
 public class Launcher extends ALauncher {
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public void run() {

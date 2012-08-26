@@ -2,13 +2,10 @@ package net.minecraft.backupmanager;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.GridLayout;
-import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -21,7 +18,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.BevelBorder;
-import javax.swing.filechooser.FileFilter;
 
 import net.minecraft.MinecraftSL;
 import net.minecraft.Options;
@@ -29,9 +25,10 @@ import net.minecraft.OptionsMenu;
 import net.minecraft.TransparentPanel;
 
 public class MinecraftBackupManager extends TransparentPanel {
-	
-	DefaultListModel wlm = new DefaultListModel();
-	JList worldsList = new JList(wlm);
+	private static final long serialVersionUID = 1L;
+
+	DefaultListModel<String> wlm = new DefaultListModel<String>();
+	JList<String> worldsList = new JList<String>(wlm);
 	public static JLabel lastfile = new JLabel("Extracting idle.avi ...");
 	
 	public MinecraftBackupManager() {
@@ -46,7 +43,7 @@ public class MinecraftBackupManager extends TransparentPanel {
 		System.out.println("Listing all files");
 		//dirWorlds = new File(Options.getMCDir(), "saves");
 		//childrenWorlds = dirWorlds.list();
-		wlm = new DefaultListModel();
+		wlm = new DefaultListModel<String>();
 		if (childrenWorlds != null) {
 		  for (int i=0; i<childrenWorlds.length; i++) {
 		    String filename = childrenWorlds[i];
@@ -54,7 +51,7 @@ public class MinecraftBackupManager extends TransparentPanel {
 		  }
 		}
 		setLayout(new BorderLayout());
-		worldsList = new JList(wlm);
+		worldsList = new JList<String>(wlm);
 		if (worldsList.getSelectedIndex() == -1) {
 		  worldsList.setSelectedIndex(0);
 		}
@@ -93,14 +90,14 @@ public class MinecraftBackupManager extends TransparentPanel {
 	   			System.out.println("Listing all files");
 	   			File dirWorlds2 = new File(Options.getMCDir(), "saves");
 	   			String[] childrenWorlds2 = dirWorlds2.list();
-	   			wlm = new DefaultListModel();
+	   			wlm = new DefaultListModel<String>();
 	   			if (childrenWorlds2 != null) {
 	   			  for (int i=0; i<childrenWorlds2.length; i++) {
 	   			    String filename = childrenWorlds2[i];
 	   			    wlm.addElement(filename);
 	   			  }
 	   			}
-	   			worldsList = new JList(wlm);
+	   			worldsList = new JList<String>(wlm);
 	   			JScrollPane worldsListPane2 = new JScrollPane(worldsList);
 	   			listPanel.removeAll();
 	   			listPanel.add(worldsListPane2, "Center");
@@ -121,7 +118,7 @@ public class MinecraftBackupManager extends TransparentPanel {
 	 		  System.out.println("Listing all files");
 	    	  File dirWorlds3 = new File(Options.getMCDir(), "saves");
 	   		  String[] childrenWorlds3 = dirWorlds3.list();
-	   		  wlm = new DefaultListModel();
+	   		  wlm = new DefaultListModel<String>();
 	   		  if (childrenWorlds3 != null) {
 	   		    for (int i=0; i<childrenWorlds3.length; i++) {
 	   		      String filename = childrenWorlds3[i];
@@ -138,14 +135,14 @@ public class MinecraftBackupManager extends TransparentPanel {
 	    		System.out.println("Listing all files");
 	    		File dirWorlds2 = new File(Options.getMCDir(), "saves");
 	    		String[] childrenWorlds2 = dirWorlds2.list();
-	    		wlm = new DefaultListModel();
+	    		wlm = new DefaultListModel<String>();
 	    		if (childrenWorlds2 != null) {
 	    		  for (int i=0; i<childrenWorlds2.length; i++) {
 	    		    String filename = childrenWorlds2[i];
 	    		    wlm.addElement(filename);
 	    		  }
 	    		}
-	    		worldsList = new JList(wlm);
+	    		worldsList = new JList<String>(wlm);
 	    		JScrollPane worldsListPane2 = new JScrollPane(worldsList);
 	    		listPanel.removeAll();
 	    		listPanel.add(worldsListPane2, "Center");
@@ -167,14 +164,14 @@ public class MinecraftBackupManager extends TransparentPanel {
 	  		System.out.println("Listing all files");
 			File dirWorlds2 = new File(Options.getMCDir(), "saves");
 			String[] childrenWorlds2 = dirWorlds2.list();
-			wlm = new DefaultListModel();
+			wlm = new DefaultListModel<String>();
 			if (childrenWorlds2 != null) {
 			  for (int i=0; i<childrenWorlds2.length; i++) {
 			    String filename = childrenWorlds2[i];
 			    wlm.addElement(filename);
 			  }
 			}
-			worldsList = new JList(wlm);
+			worldsList = new JList<String>(wlm);
 			if ((wlm.getSize() >= index) || (wlm.getSize() == index)) {
 			  worldsList.setSelectedIndex(index);
 			} else {
@@ -196,7 +193,7 @@ public class MinecraftBackupManager extends TransparentPanel {
 	 		System.out.println("Listing all files");
 	    	File dirWorlds2 = new File(Options.getMCDir(), "saves");
 	   		String[] childrenWorlds2 = dirWorlds2.list();
-	   		wlm = new DefaultListModel();
+	   		wlm = new DefaultListModel<String>();
 	   		if (childrenWorlds2 != null) {
 	   		  for (int i=0; i<childrenWorlds2.length; i++) {
 	   		    String filename = childrenWorlds2[i];
@@ -235,7 +232,7 @@ public class MinecraftBackupManager extends TransparentPanel {
 	 		System.out.println("Listing all files");
 	    	File dirWorlds2 = new File(Options.getMCDir(), "saves");
 	   		String[] childrenWorlds2 = dirWorlds2.list();
-	   		wlm = new DefaultListModel();
+	   		wlm = new DefaultListModel<String>();
 	   		if (childrenWorlds2 != null) {
 	   		  for (int i=0; i<childrenWorlds2.length; i++) {
 	   		    String filename = childrenWorlds2[i];
