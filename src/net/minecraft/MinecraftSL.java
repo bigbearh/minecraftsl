@@ -108,6 +108,17 @@ public final class MinecraftSL extends JFrame {
 	private MinecraftSL() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
+		if (System.getProperty("os.name").contains("OS X")) {
+			try
+			{
+				Class<?> fullScreenUtilityClass = Class.forName("com.apple.eawt.FullScreenUtilities");
+				java.lang.reflect.Method setWindowCanFullScreenMethod = fullScreenUtilityClass.getDeclaredMethod("setWindowCanFullScreen", new Class[] { Window.class, Boolean.TYPE });
+				setWindowCanFullScreenMethod.invoke(null, new Object[] { this, Boolean.valueOf(true) });
+			} catch (Exception e) {
+				// This is not a fatal exception, so just log it for brevity.
+				e.printStackTrace();
+			}
+		
 		Modules.injectModules();
 		
 		setTitle("MinecraftSL build "+build);
